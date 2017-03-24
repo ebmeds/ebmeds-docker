@@ -1,0 +1,51 @@
+version: "3"
+
+services:
+#  api-gateway:
+#    image: api-gateway
+#    ports:
+#      - 3002:80
+#    networks:
+#      - ebmedsnet
+#    deploy:
+#      placement:
+#        constraints: [node.role == manager]
+
+  engine:
+    image: engine
+    ports:
+      - 3002:3002
+    networks:
+      - ebmedsnet
+    depends_on:
+      - api-gateway
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels: [APP=VOTING]
+      resources:
+        # Hard limits
+        limits:
+          cpus: '0.25'
+          memory: 512M
+        # Soft limits
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+      restart_policy:
+        condition: on-failure
+        delay: 2s
+        max_attempts: 3
+        window: 120s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        max_failure_ratio: 0.3
+
+networks:
+  ebmedsnet:
+
+# volumes:
+#   db-data:
+
