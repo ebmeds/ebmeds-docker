@@ -14,11 +14,13 @@ services:
   engine:
     image: engine
     ports:
-      - 3002:80
+      - 3002:3002
     networks:
       - ebmedsnet
-    depends_on:
-      - api-gateway
+    env_file:
+      - config/engine.env
+#    depends_on:
+#      - api-gateway
     deploy:
       mode: replicated
       replicas: 1
