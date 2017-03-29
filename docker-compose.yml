@@ -14,7 +14,7 @@ services:
   engine:
     image: engine
     ports:
-      - 3002:3002
+      - 3002:80
     networks:
       - ebmedsnet
     depends_on:
