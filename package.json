@@ -5,9 +5,11 @@
   "main": "index.js",
   "scripts": {
     "install": "docker build -t engine engine/",
-    "start": "docker swarm init; docker deploy --compose-file docker-compose.yml ebmeds",
-    "stop": "docker swarm leave -f",
-    "restart": "npm stop; npm start",
+    "docker:init": "docker swarm init",
+    "docker:start": "docker deploy --compose-file docker-compose.yml ebmeds",
+    "docker:stop": "docker service rm ebmeds_engine ebmeds_api-gateway",
+    "docker:restart": "npm run docker:stop; npm run docker:start",
+    "docker:deinit": "docker swarm leave -f",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
