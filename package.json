@@ -7,6 +7,7 @@
     "install": "docker build -t engine engine/",
     "start": "docker swarm init; docker deploy --compose-file docker-compose.yml ebmeds",
     "stop": "docker swarm leave -f",
+    "restart": "npm stop; npm start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -23,6 +24,5 @@
   },
   "homepage": "https://github.com/ebmeds/ebmeds-docker#readme",
   "dependencies": {
-    "gulp": "^3.9.1"
   }
 }

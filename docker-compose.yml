@@ -1,15 +1,15 @@
 version: "3"
 
 services:
-#  api-gateway:
-#    image: api-gateway
-#    ports:
-#      - 3002:80
-#    networks:
-#      - ebmedsnet
-#    deploy:
-#      placement:
-#        constraints: [node.role == manager]
+  api-gateway:
+    image: api-gateway
+    ports:
+      - 3001:3001
+    networks:
+      - ebmedsnet
+    deploy:
+      placement:
+        constraints: [node.role == manager]
 
   engine:
     image: engine
@@ -19,8 +19,8 @@ services:
       - ebmedsnet
     env_file:
       - config/engine.env
-#    depends_on:
-#      - api-gateway
+    depends_on:
+      - api-gateway
     deploy:
       mode: replicated
       replicas: 1
