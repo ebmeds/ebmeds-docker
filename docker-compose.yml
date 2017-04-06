@@ -3,6 +3,8 @@ version: "3"
 services:
   api-gateway:
     image: api-gateway
+    env_file:
+	- config/api-gateway.env
     ports:
       - 3001:3001
     networks:
