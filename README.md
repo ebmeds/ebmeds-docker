@@ -1,17 +1,18 @@
 # ebmeds-docker
-Repo that gathers EBMeDS microservices as submodules and launches a Docker Swarm of them.
+Repo that gathers EBMeDS microservices, makes a Docker Swarm, configures and launches them.
 
 ## Usage
+We assume that the Docker images `engine` and `api-gateway` are already built and available on the machine. And that docker works!
+
 ```
-# first-time checkout
-$ npm install
-$ git clone --recursive https://github.com/ebmeds/ebmeds-docker
-# TODO: docker swarm commands here, use gulp
-# Updates have happened in the submodules, e.g. in engine
-$ git submodule update --recursive --remote
+$ npm run docker:init    # init docker swarm if not already running
+$ npm run docker:start
 ```
 
-NOTE: DO NOT USE THIS REPO FOR COMMITTING CODE TO THE SUBMODULES. THIS IS FOR *DEPLOYMENT ONLY*.
+To stop:
+```
+$ npm run docker:stop     # stop the services
+$ npm run docker:deinit   # stop the swarm, not needed in most cases 
+```
 
-
-
+Per default `api-gateway` listens on port 3001 and `engine` on 3002. Environment variables can be set per service in the `config` directory.
