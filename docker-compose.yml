@@ -4,14 +4,19 @@ services:
   api-gateway:
     image: api-gateway
     env_file:
-      - config/api-gateway.env
+      - api-gateway/config.env
     ports:
       - 3001:3001
     networks:
       - ebmedsnet
+    # application logs are handled by the app, but all other stdout output goes here
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://localhost:12203
     deploy:
-      placement:
-        constraints: [node.role == manager]
+      mode: replicated
+      replicas: 1
 
   engine:
     image: engine
@@ -20,13 +25,17 @@ services:
     networks:
       - ebmedsnet
     env_file:
-      - config/engine.env
+      - engine/config.env
     depends_on:
       - api-gateway
+    # application logs are handled by the app, but all other stdout output goes here
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://localhost:12203
     deploy:
       mode: replicated
       replicas: 1
-      labels: [APP=VOTING]
       resources:
         # Hard limits
         limits:
@@ -53,3 +62,6 @@ networks:
 # volumes:
 #   db-data:
 
+# docker network create --driver overlay ebmedsnet
+# docker service create --name api-gateway --env-file config/api-gateway.env --constraint 'node.role == manager' --network ebmedsnet --publish 3001:3001 api-gateway
+# docker service create --name engine --publish 3002:3002 --network ebmedsnet --env-file config/engine.env --replicas=4 --update-delay 10s --update-parallelism 1 engine
