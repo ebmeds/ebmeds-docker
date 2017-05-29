@@ -10,10 +10,10 @@ services:
     networks:
       - ebmedsnet
     # application logs are handled by the app, but all other stdout output goes here
-    logging:
-      driver: gelf
-      options:
-        gelf-address: udp://localhost:12203
+#    logging:
+#      driver: gelf
+#      options:
+#        gelf-address: udp://localhost:12201
     deploy:
       mode: replicated
       replicas: 1
@@ -26,25 +26,14 @@ services:
       - ebmedsnet
     env_file:
       - engine/config.env
-    depends_on:
-      - api-gateway
     # application logs are handled by the app, but all other stdout output goes here
-    logging:
-      driver: gelf
-      options:
-        gelf-address: udp://localhost:12203
+#    logging:
+#      driver: gelf
+#      options:
+#        gelf-address: udp://localhost:12201
     deploy:
       mode: replicated
       replicas: 1
-      resources:
-        # Hard limits
-        limits:
-          cpus: '0.25'
-          memory: 512M
-        # Soft limits
-        reservations:
-          cpus: '0.25'
-          memory: 256M
       restart_policy:
         condition: on-failure
         delay: 2s
@@ -55,6 +44,71 @@ services:
         delay: 10s
         failure_action: continue
         max_failure_ratio: 0.3
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.3.2
+    # build: elasticsearch/
+    environment:
+       ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+       # disable X-Pack
+       # see https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
+       #     https://www.elastic.co/guide/en/x-pack/current/installing-xpack.html#xpack-enabling
+       xpack.security.enabled: "false"
+       xpack.monitoring.enabled: "false"
+       xpack.graph.enabled: "false"
+       xpack.watcher.enabled: "false"
+    volumes:
+      #- esdata1:/usr/share/elasticsearch/data
+      - ./data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - ebmedsnet
+    # log everything to stdout -> gelf -> logstash (and back to -> elasticsearch)
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://localhost:12201
+    deploy:
+        mode: replicated # TODO: should be global once we cluster it
+        replicas: 1
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:5.3.2
+    # build: kibana/
+    volumes:
+      - ./kibana/config/:/usr/share/kibana/config
+    ports:
+      - "5601:5601"
+      #- "12203:12203" # should not be needed?
+    networks:
+      - ebmedsnet
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://localhost:12201
+    deploy:
+      mode: replicated
+      replicas: 1 # should be enough
+
+  logstash:
+      image: docker.elastic.co/logstash/logstash:5.4.0
+      #build: logstash/
+      volumes:
+        - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+        - ./logstash/pipeline:/usr/share/logstash/pipeline
+      ports:
+        # - "5000:5000"
+        - "12201:12201/udp" # logs coming from docker log drivers (gelf)
+      environment:
+        LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+        LS_OPTS: "--verbose"
+        PATH_CONFIG: "/usr/share/logstash/pipeline"
+      networks:
+        - ebmedsnet
+      deploy:
+        mode: global
 
 networks:
   ebmedsnet:
