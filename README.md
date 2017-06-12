@@ -9,6 +9,8 @@ $ npm run docker:init    # init docker swarm if not already running
 $ npm run docker:start
 ```
 
+The `init` command gives an ID number that other nodes can use to join the cluster, using `docker swarm join` (see the Docker documentation).
+
 To stop:
 ```
 $ npm run docker:stop     # stop the services
