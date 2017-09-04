@@ -9,7 +9,7 @@
     "docker:stop": "docker service rm ebmeds_engine ebmeds_api-gateway ebmeds_kibana ebmeds_logstash ebmeds_elasticsearch ebmeds_coaching",
     "docker:restart": "npm run docker:stop; npm run docker:start",
     "docker:deinit": "docker swarm leave -f",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"No tests specified\""
   },
   "repository": {
     "type": "git",
