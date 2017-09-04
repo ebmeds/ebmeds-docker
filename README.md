@@ -68,3 +68,7 @@ The ELK stack used for logging needs to mount a few directories from the host in
 ## Advanced usage
 
 There are many advanced features of Docker that can be used to make the service more failsafe. This mostly applies to how the data in the ELK stack is stored and backed up. Please refer to the ELK documentation for details on this.
+
+## Verifying the installation
+
+TODO
