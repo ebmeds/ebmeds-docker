@@ -4,7 +4,6 @@
   "description": "Gather EBMeDS microservices, build their Docker containers and launch them in Swarm mode.",
   "main": "index.js",
   "scripts": {
-    "install": "docker build -t engine engine/",
     "docker:init": "docker swarm init",
     "docker:start": "docker deploy --compose-file docker-compose.yml ebmeds",
     "docker:stop": "docker service rm ebmeds_engine ebmeds_api-gateway ebmeds_kibana ebmeds_logstash ebmeds_elasticsearch ebmeds_coaching",
