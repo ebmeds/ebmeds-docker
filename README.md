@@ -6,6 +6,16 @@ Repo that gathers EBMeDS microservices, makes a Docker Swarm, configures and lau
 ### Install Docker
 The installation instructions can be found on e.g. (Docker's site)[https://www.docker.com]. We support version 1.12+.
 
+### Install Node.js (optional)
+You will need Node.js to run the `npm` commands below. You can also run docker commands manually, removing the need for Node.
+
+### Download this repository
+Download the zip file from Github (the "Clone or download" button) or if you have Git installed, run the command:
+
+```
+git clone https://github.com/ebmeds/ebmeds-docker.git
+```
+
 ### Login to quay.io and pull the required images
 The built Docker images are stored in a repository on quay.io. Vendor organizations are provided with a login username and password. Developers with access to the EBMeDS Github repos can build the images locally. The images are tagged with the git branch name, i.e. the development version is tagged `dev` and the stable version `master` (and as a special case, also `latest`).
 
@@ -34,6 +44,7 @@ docker pull docker.elastic.co/kibana/logstash:5.3.2 logstash
 Assuming that the Docker images `engine` and `api-gateway` etc are already built and available on the machine (build them yourself or see above).
 
 ```
+# In the directory this README is in:
 $ npm run docker:init    # init Docker Swarm if not already running.
 $ npm run docker:start
 ```
