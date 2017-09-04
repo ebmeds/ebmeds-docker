@@ -1,0 +1,5 @@
+---
+- hosts: all
+  roles:
+    - role: solita-base
+      tags: solita-base

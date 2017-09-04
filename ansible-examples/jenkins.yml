@@ -1,0 +1,253 @@
+---
+- hosts: jenkins
+  vars:
+    scs_repos_schedules:
+      scs: monthly1
+  handlers:
+    - include: roles/nginx/handlers/main.yml
+  pre_tasks:
+    - name: Remove CIS hardenings from /tmp mount
+      mount:
+        path: /tmp
+        src: /dev/mapper/centos-tmp
+        fstype: xfs
+        opts: defaults
+        passno: 2
+        state: mounted
+      tags:
+        - jenkins
+        - remove-tmp-hardenings
+  roles:
+    - role: solita.jenkins
+      tags: jenkins
+    - role: scs-repos
+      tags: scs-repos
+    - role: nginx
+      tags: nginx
+  tasks:
+    - name: Copy hosts file
+      template:
+        src: jenkins/hosts.j2
+        dest: /etc/hosts
+        owner: root
+        group: root
+        mode: 0644
+      tags:
+        - jenkins
+        - copy-hosts-file
+
+    - name: Install EPEL repository
+      yum:
+        name: epel-release
+        state: installed
+      tags:
+        - jenkins
+        - install-epel-repo
+
+    - name: Install prerequisite packages
+      yum:
+        name: "{{ item }}"
+        state: installed
+      with_items:
+        - ansible
+        - git
+      tags:
+        - jenkins
+        - jenkins-prereq-pkgs
+
+    - name: Get route table
+      shell: ip route show
+      register: routetable
+      changed_when: false
+      tags:
+        - jenkins
+        - static-route-deus
+
+    - name: Set static route for deus.solita.fi
+      shell: ip route add 192.168.0.24 via 172.18.22.129 dev {{ scsmgmt_interface }}
+      when: routetable.stdout.find("192.168.0.24 via 172.18.22.129 dev {{ scsmgmt_interface }}") == -1
+      tags:
+        - jenkins
+        - static-route-deus
+
+    - name: Make static route boot-persistent for deus.solita.fi
+      template:
+        src: jenkins/static-route-deus.j2
+        dest: /etc/sysconfig/network-scripts/route-{{ scsmgmt_interface }}
+        owner: root
+        group: root
+        mode: 0644
+      tags:
+        - jenkins
+        - static-route-deus
+
+    - name: Add deus to known hosts
+      shell: 'grep deus.solita.fi /var/lib/jenkins/.ssh/known_hosts >/dev/null || echo "deus.solita.fi,192.168.0.24 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBP7RZ+3JMyP28idQOPgLa1O5gvoG9yqI3uHz+fvtrSt3ZCzaAV6ZLJSPWs5ja53GAi9jVSwTtqWTOU0tA9ytAqE=
+|1|hb4pY7Ri4KHxLaZa5UsmLQ+HbXE=|CjCG4MTwUf0V7VrZ2OUzeBvc9dI= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==" >> /var/lib/jenkins/.ssh/known_hosts'
+      become: yes
+      become_user: jenkins
+      tags:
+        - jenkins
+        - add-deus-known-hosts
+
+    - name: Disable host key checking
+      lineinfile:
+        dest: /etc/ansible/ansible.cfg
+        regexp: "^#host_key_checking = False"
+        line: "host_key_checking = False"
+        backrefs: yes
+      tags:
+        - jenkins
+        - host-key-check
+
+    - name: Generate SSH key for Jenkins
+      user:
+        name: jenkins
+        generate_ssh_key: yes
+      tags:
+        - jenkins
+        - generate-ssh-key
+
+    - name: Fetch Jenkins' public key
+      fetch:
+        src: /var/lib/jenkins/.ssh/id_rsa.pub
+        dest: "{{ inventory_dir }}/../jenkins_id_rsa.pub"
+        flat: yes
+      tags:
+        - jenkins
+        - fetch-pubkey
+
+    - name: Add ODA API Gateway GitHub repository private key
+      copy:
+        content: "{{ jenkins_id_rsa_apigw }}"
+        dest: /var/lib/jenkins/.ssh/id_rsa_apigw
+        owner: jenkins
+        group: jenkins
+        mode: 0400
+      tags:
+        - jenkins
+        - github-private-keys
+        - jenkins-apigw-key
+
+    - name: Add ODA EBMeDS Engine GitHub repository private key
+      copy:
+        content: "{{ jenkins_id_rsa_ebmedseng }}"
+        dest: /var/lib/jenkins/.ssh/id_rsa_ebmedseng
+        owner: jenkins
+        group: jenkins
+        mode: 0400
+      tags:
+        - jenkins
+        - github-private-keys
+        - jenkins-ebmedseng-key
+
+    - name: Add Coaching GitHub repository private key
+      copy:
+        content: "{{ jenkins_id_rsa_coaching }}"
+        dest: /var/lib/jenkins/.ssh/id_rsa_coaching
+        owner: jenkins
+        group: jenkins
+        mode: 0400
+      tags:
+        - jenkins
+        - github-private-keys
+        - jenkins-coaching-key
+
+    - name: Increase max file soft limit
+      lineinfile:
+        dest: /etc/security/limits.conf
+        line: "* soft nofile 65535"
+      tags:
+        - file-soft-limit
+        - file-limit
+
+    - name: Increase max file hard limit
+      lineinfile:
+        dest: /etc/security/limits.conf
+        line: "* hard nofile 65535"
+      tags:
+        - file-hard-limit
+        - file-limit
+
+    - name: Check if SELinux httpd_setrlimit is enabled
+      shell: getsebool httpd_setrlimit
+      register: selinuxsetrlimit
+      changed_when: false
+      ignore_errors: true
+      tags:
+        - nginx
+        - nginx-selinux
+
+    - name: Configure SELinux to enable httpd_setrlimit
+      command: setsebool -P httpd_setrlimit 1
+      when: selinuxsetrlimit.stdout.find("on") == -1
+      tags:
+        - nginx
+        - nginx-selinux
+
+    - name: Copy SSL certificate for NGINX
+      copy:
+        content: "{{ nginx_ssl_certificate }}"
+        dest: /etc/nginx/certs/ebmedscloud.org_bundle.crt
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - restart nginx
+      tags:
+        - nginx
+        - nginx-certs
+
+    - name: Copy SSL private key for NGINX
+      copy:
+        content: "{{ nginx_private_key }}"
+        dest: /etc/nginx/certs/ebmedscloud.org.key
+        owner: root
+        group: root
+        mode: 0400
+      notify:
+        - restart nginx
+      tags:
+        - nginx
+        - nginx-private-key
+
+    - name: Install NGINX reverse proxy configuration
+      template:
+        src: nginx/jenkins_reverse_proxy.conf.j2
+        dest: /etc/nginx/conf.d/reverse_proxy.conf
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - restart nginx
+      tags:
+        - nginx
+        - nginx-reverseproxy-conf
+
+    - name: Check allowed HTTP ports for SELinux
+      shell: semanage port --list | grep "^http_port_t"
+      register: selinuxhttpports
+      changed_when: false
+      ignore_errors: true
+      tags:
+        - nginx
+        - nginx-selinux
+
+    - name: Configure SELinux to allow NGINX proxy requests to Jenkins (HTTP port 8080)
+      command: semanage port --modify --type http_port_t --proto tcp 8080
+      when: selinuxhttpports.stdout.find("8080") == -1
+      tags:
+        - nginx
+        - nginx-selinux
+
+    - name: Set vault password
+      copy:
+        content: "{{ oda_vault_password }}"
+        dest: /var/lib/jenkins/.vault_password
+        owner: jenkins
+        group: jenkins
+        mode: 0600
+      no_log: true
+      tags:
+        - jenkins
+        - set-vault-password

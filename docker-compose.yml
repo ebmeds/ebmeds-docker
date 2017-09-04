@@ -47,7 +47,6 @@ services:
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.3.2
-    # build: elasticsearch/
     environment:
        ES_JAVA_OPTS: "-Xms1g -Xmx1g"
        # disable X-Pack
@@ -67,6 +66,9 @@ services:
     deploy:
         mode: replicated # TODO: should be global once we cluster it
         replicas: 1
+  #rethinkdb-tmp:
+  #  image: rethinkdb:2.3.5
+
 
   kibana:
     image: docker.elastic.co/kibana/kibana:5.3.2

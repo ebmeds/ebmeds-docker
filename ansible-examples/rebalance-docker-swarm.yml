@@ -1,0 +1,7 @@
+- hosts: app
+  tasks:
+    - name: Rebalance Docker Swarm
+      shell: 'docker service scale api-gateway={{ apigateway_replicas * 2 }} engine={{ engine_replicas * 2 }} && sleep 30 && docker service scale api-gateway={{ apigateway_replicas }} engine={{ engine_replicas }}'
+      run_once: true
+      tags:
+        - rebalance-swarm

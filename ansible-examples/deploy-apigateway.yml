@@ -1,0 +1,12 @@
+---
+- hosts: app
+  tasks:
+    - name: Pull latest API Gateway Docker image
+      shell: 'docker pull quay.io/duodecim/ebmeds-api-gateway:{{ docker_image_tag }}'
+
+    - name: Tag API Gateway Docker image
+      shell: 'docker tag quay.io/duodecim/ebmeds-api-gateway:{{ docker_image_tag }} api-gateway'
+
+    - name: Perform rolling update for API Gateway service
+      shell: "docker service update --image $(docker inspect --type image --format {% raw %}'{{.Id}}'{% endraw %} api-gateway:latest) api-gateway"
+      run_once: true

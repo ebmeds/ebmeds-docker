@@ -1,0 +1,237 @@
+- hosts: front
+  serial: 1
+  tasks:
+    - name: Update all packages
+      yum:
+        name: '*'
+        state: latest
+        update_cache: yes
+      register: updatepackages
+      tags:
+        - update-front
+        - update-packages
+
+    - name: Stop keepalived for graceful VIP transition
+      service:
+        name: keepalived
+        state: stopped
+      when: updatepackages.changed
+      tags:
+        - update-front
+        - stop-keepalived
+
+    - name: Ensure NGINX default.conf is absent
+      file:
+        name: /etc/nginx/conf.d/default.conf
+        state: absent
+      when: updatepackages.changed
+      tags:
+        - update-front
+        - ensure-nginx-conf
+
+    - name: Reboot server
+      command: /usr/bin/systemd-run --on-active=2 /usr/bin/systemctl reboot
+      async: 1
+      poll: 0
+      ignore_errors: true
+      when: updatepackages.changed
+      tags:
+        - update-front
+        - reboot-server
+        - initiate-reboot
+
+    - name: Wait for server to boot up...
+      become: false
+      delegate_to: localhost
+      shell: "sleep 20 && ssh {{ inventory_hostname }} echo hello"
+      register: waitforbootup
+      retries: 10
+      delay: 10
+      until: waitforbootup.stdout.find('hello') != -1
+      ignore_errors: "{{ ansible_check_mode }}"
+      when: updatepackages.changed
+      tags:
+        - update-front
+        - reboot-server
+        - wait-for-bootup
+
+    - name: Wait for NGINX to start...
+      wait_for:
+        port: 443
+        state: started
+        delay: 2
+        timeout: 60
+        connect_timeout: 15
+      when: updatepackages.changed
+      tags:
+        - update-front
+        - wait-for-nginx
+
+- hosts: app
+  serial: 1
+  vars:
+    onlyrestartdocker: false
+  tasks:
+    - name: Update all packages
+      yum:
+        name: '*'
+        state: latest
+        update_cache: yes
+      register: updatepackages
+      tags:
+        - update-app
+        - update-packages
+
+    - name: Disable Elasticsearch shard allocation
+      uri:
+        url: http://localhost:9200/_cluster/settings
+        method: PUT
+        body: "{\"transient\": {\"cluster.routing.allocation.enable\":\"none\"}}"
+        body_format: json
+      register: response
+      until: "response.json.acknowledged == true"
+      retries: 10
+      delay: 10
+      ignore_errors: "{{ ansible_check_mode }}"
+      when: updatepackages is defined and updatepackages.changed or onlyrestartdocker
+      tags:
+        - update-app
+        - es-disable-shard-alloc
+        - only-restart-docker
+
+    - name: Drain Docker
+      shell: 'docker node update --availability drain {{ ansible_hostname }}'
+      when: updatepackages is defined and updatepackages.changed or onlyrestartdocker
+      tags:
+        - update-app
+        - drain-docker
+        - only-restart-docker
+
+    - name: Wait for Docker to drain...
+      pause:
+        seconds: 60
+      when: updatepackages is defined and updatepackages.changed or onlyrestartdocker
+      tags:
+        - update-app
+        - wait-for-drain
+        - only-restart-docker
+
+    - name: Restart Docker (not used with yum update)
+      service:
+        name: docker
+        state: restarted
+      when: onlyrestartdocker
+      tags:
+        - only-restart-docker
+
+    - name: Shutdown Docker
+      service:
+        name: docker
+        state: stopped
+      when: updatepackages.changed
+      tags:
+        - update-app
+        - shutdown-docker
+
+    - name: Reboot server
+      command: /usr/bin/systemd-run --on-active=2 /usr/bin/systemctl reboot
+      async: 1
+      poll: 0
+      ignore_errors: true
+      when: updatepackages.changed
+      tags:
+        - update-app
+        - reboot-server
+        - initiate-reboot
+
+    - name: Wait for server to boot up...
+      become: false
+      delegate_to: localhost
+      shell: "sleep 20 && ssh {{ inventory_hostname }} echo hello"
+      register: waitforbootup
+      retries: 10
+      delay: 10
+      until: waitforbootup.stdout.find('hello') != -1
+      ignore_errors: "{{ ansible_check_mode }}"
+      when: updatepackages.changed
+      tags:
+        - update-app
+        - reboot-server
+        - wait-for-bootup
+
+    - name: Wait for Docker to start...
+      wait_for:
+        port: "{{ item }}"
+        state: started
+        delay: 5
+        timeout: 90
+        connect_timeout: 15
+      with_items:
+        - 2377
+        - 7946
+      when: updatepackages.changed
+      tags:
+        - update-app
+        - wait-for-docker
+
+    - name: Activate Docker
+      shell: 'docker node update --availability active {{ ansible_hostname }}'
+      when: updatepackages is defined and updatepackages.changed or onlyrestartdocker
+      tags:
+        - update-app
+        - activate-docker
+        - only-restart-docker
+
+    - name: Wait for Docker to activate...
+      pause:
+        seconds: 60
+      when: updatepackages is defined and updatepackages.changed or onlyrestartdocker
+      tags:
+        - update-app
+        - wait-for-activate
+        - only-restart-docker
+
+    - name: Re-enable Elasticsearch shard allocation
+      uri:
+        url: http://localhost:9200/_cluster/settings
+        method: PUT
+        body: "{\"transient\": {\"cluster.routing.allocation.enable\":\"all\"}}"
+        body_format: json
+      register: response
+      until: "response.json.acknowledged == true"
+      retries: 10
+      delay: 10
+      ignore_errors: "{{ ansible_check_mode }}"
+      when: updatepackages is defined and updatepackages.changed or onlyrestartdocker
+      tags:
+        - update-app
+        - es-enable-shard-alloc
+        - only-restart-docker
+
+    - name: Wait for Elasticsearch cluster state to become green...
+      uri:
+        url: http://localhost:9200/_cluster/health
+        method: GET
+      register: response
+      until: "response.json.status == 'green'"
+      retries: 40
+      delay: 10
+      ignore_errors: "{{ ansible_check_mode }}"
+      when: updatepackages is defined and updatepackages.changed or onlyrestartdocker
+      tags:
+        - update-app
+        - es-wait-for-green
+        - only-restart-docker
+
+- hosts: app
+  vars:
+    onlyrestartdocker: false
+  tasks:
+    - name: Rebalance Docker Swarm
+      shell: 'docker service scale api-gateway={{ apigateway_replicas * 2 }} engine={{ engine_replicas * 2 }} && sleep 30 && docker service scale api-gateway={{ apigateway_replicas }} engine={{ engine_replicas }}'
+      when: updatepackages is defined and updatepackages.changed or onlyrestartdocker
+      run_once: true
+      tags:
+        - update-app
+        - rebalance-swarm
+        - only-restart-docker
