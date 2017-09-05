@@ -26,7 +26,7 @@ docker pull quay.io/duodecim/ebmeds-engine:latest
 docker pull quay.io/duodecim/ebmeds-coaching:latest
 docker pull docker.elastic.co/elasticsearch/elasticsearch:5.3.2
 docker pull docker.elastic.co/kibana/kibana:5.3.2
-docker pull docker.elastic.co/kibana/logstash:5.3.2
+docker pull docker.elastic.co/logstash/logstash:5.3.2
 ```
 
 The images can be tagged for convenience:
@@ -37,7 +37,7 @@ docker tag quay.io/duodecim/ebmeds-engine:latest engine
 docker tag quay.io/duodecim/ebmeds-coaching:latest coaching
 docker tag docker.elastic.co/elasticsearch/elasticsearch:5.3.2 elasticsearch
 docker tag docker.elastic.co/kibana/kibana:5.3.2 kibana
-docker tag docker.elastic.co/kibana/logstash:5.3.2 logstash
+docker tag docker.elastic.co/logstash/logstash:5.3.2 logstash
 ```
 
 ## Usage (Docker v1.13+)
