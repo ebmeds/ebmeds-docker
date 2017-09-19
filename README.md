@@ -4,7 +4,7 @@ Repo that gathers EBMeDS microservices, makes a Docker Swarm, configures and lau
 ## Installation
 
 ### Install Docker
-The installation instructions can be found on e.g. (Docker's site)[https://www.docker.com]. We support version 1.12+.
+The installation instructions can be found on e.g. [Docker's site](https://www.docker.com). We support version 1.12+.
 
 ### Install Node.js (optional)
 You will need Node.js to run the `npm` commands below. You can also run docker commands manually, removing the need for Node.
@@ -17,13 +17,20 @@ git clone https://github.com/ebmeds/ebmeds-docker.git
 ```
 
 ### Login to quay.io and pull the required images
-The built Docker images are stored in a repository on quay.io. Vendor organizations are provided with a login username and password. Developers with access to the EBMeDS Github repos can build the images locally. The images are tagged with the git branch name, i.e. the development version is tagged `dev` and the stable version `master` (and as a special case, also `latest`).
+The entire system is run in Docker, where each component has its own Docker container. The version of this container is also the same as the version of the contained component.
+
+The Docker images are stored in a repository on quay.io. Vendor organizations are provided with a login username and password. Developers with access to the EBMeDS Github repos can build the images locally. The images are tagged with the git branch name, i.e. the development version is tagged `dev` and the stable version `master` (and as a special case, also `latest`).
 
 ```
+# Log in to quay.io to pull EBMeDS-specific images
 docker login -u="duodecim+exampleorg" -p="examplepassword" quay.io
+
+# These are the private images, here we pull the "latest" version i.e. latest stable version.
 docker pull quay.io/duodecim/ebmeds-api-gateway:latest
 docker pull quay.io/duodecim/ebmeds-engine:latest
 docker pull quay.io/duodecim/ebmeds-coaching:latest
+
+# EBMeDS also uses some open source images
 docker pull docker.elastic.co/elasticsearch/elasticsearch:5.3.2
 docker pull docker.elastic.co/kibana/kibana:5.3.2
 docker pull docker.elastic.co/logstash/logstash:5.3.2
@@ -39,6 +46,19 @@ docker tag docker.elastic.co/elasticsearch/elasticsearch:5.3.2 elasticsearch
 docker tag docker.elastic.co/kibana/kibana:5.3.2 kibana
 docker tag docker.elastic.co/logstash/logstash:5.3.2 logstash
 ```
+
+#### Choosing the EBMeDS version
+
+The EBMeDS components have a version number. The instructions above pull the latest stable version (the alias `latest`), which is usually the one wanted for production. To use an older stable version, issue the same `docker pull` commands above, but replace `latest` with the wanted version number, e.g.
+
+```
+docker pull quay.io/duodecim/ebmeds-api-gateway:1.2.3
+# etc
+```
+
+This only needs to be done for the Docker images produced by Duodecim. The open source images (at the time of writing Elasticsearch, Logstash and Kibana) should be set to the required version (5.3.2 for now).
+
+To get the latest development version, use the version name `dev`. This is updated continually, with no guarantees of stability.
 
 ## Usage (Docker v1.13+)
 Assuming that the Docker images `engine` and `api-gateway` etc are already built and available on the machine (build them yourself or see above).
