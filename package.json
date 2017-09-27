@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "docker:init": "docker swarm init",
-    "docker:start": "docker deploy --compose-file docker-compose.yml ebmeds",
+    "docker:start": "docker stack deploy --compose-file docker-compose.yml ebmeds",
     "docker:stop": "docker service rm ebmeds_engine ebmeds_api-gateway ebmeds_kibana ebmeds_logstash ebmeds_elasticsearch ebmeds_coaching",
     "docker:restart": "npm run docker:stop; npm run docker:start",
     "docker:deinit": "docker swarm leave -f",
