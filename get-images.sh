@@ -21,6 +21,7 @@ docker pull quay.io/duodecim/ebmeds-api-gateway:$VERSION
 docker pull quay.io/duodecim/ebmeds-engine:$VERSION
 docker pull quay.io/duodecim/ebmeds-coaching:$VERSION
 docker pull quay.io/duodecim/ebmeds-auth:$VERSION
+docker pull quay.io/duodecim/ebmeds-clinical-datastore:$VERSION
 docker pull docker.elastic.co/elasticsearch/elasticsearch:5.3.2
 docker pull docker.elastic.co/kibana/kibana:5.3.2
 docker pull docker.elastic.co/logstash/logstash:5.3.2
@@ -31,6 +32,7 @@ docker tag quay.io/duodecim/ebmeds-api-gateway:$VERSION api-gateway
 docker tag quay.io/duodecim/ebmeds-engine:$VERSION engine
 docker tag quay.io/duodecim/ebmeds-coaching:$VERSION coaching
 docker tag quay.io/duodecim/ebmeds-auth:$VERSION auth
+docker tag quay.io/duodecim/ebmeds-clinical-datastore:$VERSION clinical-datastore
 docker tag docker.elastic.co/elasticsearch/elasticsearch:5.3.2 elasticsearch
 docker tag docker.elastic.co/kibana/kibana:5.3.2 kibana
 docker tag docker.elastic.co/logstash/logstash:5.3.2 logstash

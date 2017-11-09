@@ -45,11 +45,22 @@ services:
       mode: replicated
       replicas: 1
 
+  clinical-datastore:
+    # listens on port 3004 per default
+    image: clinical-datastore
+    networks:
+      - ebmedsnet
+    env_file:
+      - clinical-datastore/config.env
+    deploy:
+      mode: replicated
+      replicas: 1
+
   elasticsearch:
     # listens on port 9200 for REST API traffic and port 9300 for node communication when clustered
     image: docker.elastic.co/elasticsearch/elasticsearch:5.3.2
     environment:
-       ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+       ES_JAVA_OPTS: "-Xms2g -Xmx2g"
        # disable X-Pack
        # see https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
        #     https://www.elastic.co/guide/en/x-pack/current/installing-xpack.html#xpack-enabling
@@ -59,6 +70,8 @@ services:
        xpack.watcher.enabled: "false"
     volumes:
       - ./data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
     networks:
       - ebmedsnet
     deploy:
