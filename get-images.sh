@@ -1,30 +1,44 @@
 #!/bin/bash
 
-# usage: ./get-images.sh <version>
-# default version: latest
+if [ -z $1 ]; then
+echo "Usage: sh get-images.sh <version>";
+echo "version: latest | x.y.z | dev";
+echo "\nThe environment variables DOCKER_LOGIN and DOCKER_PASSWORD can be used to skip having to manually enter the quay.io login info every time."
+exit 1;
+fi;
 
-DEFAULT_VERSION=latest
-VERSION=${1:-$DEFAULT_VERSION}
+VERSION=${1}
+ELK_VERSION=6.2.3
 
-echo '################################################'
-echo '# Logging into quay.io. Give your provided'
-echo '# username (of the form "duodecim+yourname")'
-echo '# and password. If you do not have a username,'
-echo '# see https://www.ebmeds.org/'
-echo '################################################'
+if [ -n "${DOCKER_LOGIN}" -a -n "${DOCKER_PASSWORD}" ]; then
+  echo 'Logging into quay.io with provided DOCKER_LOGIN and DOCKER_PASSWORD...'
+  docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD quay.io;
+else
+  echo '#####################################################'
+  echo '# Env variables DOCKER_LOGIN and/or DOCKER_PASSWORD #'
+  echo '# not found.                                        #'
+  echo '#                                                   #'
+  echo '# Logging into quay.io. Give your provided          #'
+  echo '# username (of the form "duodecim+yourname")        #'
+  echo '# and password. If you do not have a username,      #'
+  echo '# see https://ebmeds.github.io/docs/                #'
+  echo '#####################################################'
+  docker login quay.io
+fi;
 
-docker login quay.io
+if [ $? -ne 0 ]; then exit 1; fi
 
 echo
-echo "Downloading latest images, using version \"$VERSION\""
+echo "Downloading images, using version \"$VERSION\""
 docker pull quay.io/duodecim/ebmeds-api-gateway:$VERSION
 docker pull quay.io/duodecim/ebmeds-engine:$VERSION
 docker pull quay.io/duodecim/ebmeds-coaching:$VERSION
 docker pull quay.io/duodecim/ebmeds-auth:$VERSION
 docker pull quay.io/duodecim/ebmeds-clinical-datastore:$VERSION
-docker pull docker.elastic.co/elasticsearch/elasticsearch:5.3.2
-docker pull docker.elastic.co/kibana/kibana:5.3.2
-docker pull docker.elastic.co/logstash/logstash:5.3.2
+docker pull quay.io/duodecim/ebmeds-format-converter:$VERSION
+docker pull docker.elastic.co/elasticsearch/elasticsearch:$ELK_VERSION
+docker pull docker.elastic.co/kibana/kibana:$ELK_VERSION
+docker pull docker.elastic.co/logstash/logstash:$ELK_VERSION
 
 echo
 echo 'Tagging images'
@@ -33,8 +47,9 @@ docker tag quay.io/duodecim/ebmeds-engine:$VERSION engine
 docker tag quay.io/duodecim/ebmeds-coaching:$VERSION coaching
 docker tag quay.io/duodecim/ebmeds-auth:$VERSION auth
 docker tag quay.io/duodecim/ebmeds-clinical-datastore:$VERSION clinical-datastore
-docker tag docker.elastic.co/elasticsearch/elasticsearch:5.3.2 elasticsearch
-docker tag docker.elastic.co/kibana/kibana:5.3.2 kibana
-docker tag docker.elastic.co/logstash/logstash:5.3.2 logstash
+docker tag quay.io/duodecim/ebmeds-format-converter:$VERSION format-converter
+docker tag docker.elastic.co/elasticsearch/elasticsearch:$ELK_VERSION elasticsearch
+docker tag docker.elastic.co/kibana/kibana:$ELK_VERSION kibana
+docker tag docker.elastic.co/logstash/logstash:$ELK_VERSION logstash
 
 

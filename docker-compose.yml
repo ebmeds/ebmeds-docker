@@ -56,9 +56,20 @@ services:
       mode: replicated
       replicas: 1
 
+  format-converter:
+    # listens on port 3005 per default
+    image: format-converter
+    networks:
+      - ebmedsnet
+    env_file:
+      - format-converter/config.env
+    deploy:
+      mode: replicated
+      replicas: 4
+
   elasticsearch:
     # listens on port 9200 for REST API traffic and port 9300 for node communication when clustered
-    image: docker.elastic.co/elasticsearch/elasticsearch:5.3.2
+    image: elasticsearch
     environment:
        ES_JAVA_OPTS: "-Xms2g -Xmx2g"
        # disable X-Pack
@@ -79,7 +90,7 @@ services:
         replicas: 1
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:5.3.2
+    image: kibana
     volumes:
       - ./kibana/config/:/usr/share/kibana/config
     ports:
@@ -92,7 +103,7 @@ services:
 
   logstash:
       # listens on port 5000 for tcp input per default
-      image: docker.elastic.co/logstash/logstash:5.3.2
+      image: logstash
       volumes:
         - ./logstash/config:/usr/share/logstash/config
         - ./logstash/pipeline:/usr/share/logstash/pipeline
