@@ -3,3 +3,7 @@ path.config: /usr/share/logstash/pipeline
 queue.max_bytes: 1gb
 queue.type: persisted
 xpack.monitoring.enabled: false
+pipeline.id: main
+pipeline.batch.size: 125
+pipeline.batch.delay: 50
+path.config: /usr/share/logstash/pipeline/logstash.conf
