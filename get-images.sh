@@ -36,6 +36,7 @@ docker pull quay.io/duodecim/ebmeds-coaching:$VERSION
 docker pull quay.io/duodecim/ebmeds-auth:$VERSION
 docker pull quay.io/duodecim/ebmeds-clinical-datastore:$VERSION
 docker pull quay.io/duodecim/ebmeds-format-converter:$VERSION
+docker pull quay.io/duodecim/ebmeds-qmui:$VERSION
 docker pull docker.elastic.co/elasticsearch/elasticsearch:$ELK_VERSION
 docker pull docker.elastic.co/kibana/kibana:$ELK_VERSION
 docker pull docker.elastic.co/logstash/logstash:$ELK_VERSION
@@ -48,6 +49,7 @@ docker tag quay.io/duodecim/ebmeds-coaching:$VERSION coaching
 docker tag quay.io/duodecim/ebmeds-auth:$VERSION auth
 docker tag quay.io/duodecim/ebmeds-clinical-datastore:$VERSION clinical-datastore
 docker tag quay.io/duodecim/ebmeds-format-converter:$VERSION format-converter
+docker tag quay.io/duodecim/ebmeds-qmui:$VERSION qmui
 docker tag docker.elastic.co/elasticsearch/elasticsearch:$ELK_VERSION elasticsearch
 docker tag docker.elastic.co/kibana/kibana:$ELK_VERSION kibana
 docker tag docker.elastic.co/logstash/logstash:$ELK_VERSION logstash

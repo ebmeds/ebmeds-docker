@@ -67,10 +67,26 @@ services:
       mode: replicated
       replicas: 4
 
+
+  qmui:
+    # listens on port 3006 per default and we expose the port
+    image: qmui
+    networks:
+      - ebmedsnet
+    ports:
+      - 3006:3006 
+    env_file:
+      - qmui/config.env
+    deploy:
+      mode: replicated
+      replicas: 1
+
   elasticsearch:
     # listens on port 9200 for REST API traffic and port 9300 for node communication when clustered
     image: elasticsearch
     environment:
+       # set the below values to 50% of your server RAM, and for best performance
+       # turn off swapping on the host OS
        ES_JAVA_OPTS: "-Xms2g -Xmx2g"
        # disable X-Pack
        # see https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
@@ -105,16 +121,20 @@ services:
       # listens on port 5000 for tcp input per default
       image: logstash
       volumes:
-        - ./logstash/config:/usr/share/logstash/config
-        - ./logstash/pipeline:/usr/share/logstash/pipeline
-        - ./logstash/queue:/usr/share/logstash/data/queue
-      environment:
-        LS_JAVA_OPTS: "-Xmx256m -Xms256m"
-        PATH_CONFIG: "/usr/share/logstash/pipeline"
+        - ./logstash/config/:/usr/share/logstash/config/
+        - ./logstash/pipeline/:/usr/share/logstash/pipeline/
+        - ./logstash/queue/:/usr/share/logstash/data/queue/
+#      environment:
+#        PATH_CONFIG: "/usr/share/logstash/pipeline"
+#        PATH_SETTINGS: "/usr/share/logstash/config"
+#        PATH_DATA: "/usr/share/logstash/data"
+#        PATH_QUEUE: "/usr/share/logstash/data/queue"
+        #LS_JAVA_OPTS: "-Xmx256m -Xms256m"
       networks:
         - ebmedsnet
       deploy:
-        mode: global
+        mode: replicated
+        replicas: 1
 
 networks:
   ebmedsnet:
