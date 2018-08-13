@@ -1,10 +1,25 @@
 # ebmeds-docker
 Repo that gathers EBMeDS microservices, makes a Docker Swarm, configures and launches them.
 
+## Quick start
+
+```
+# As a non-root user
+git clone https://github.com/ebmeds/ebmeds-docker.git
+cd ebmeds-docker
+chmod -R 700 .
+chmod -R 750 ./elasticsearch ./kibana ./logstash
+chmod -R 770 ./data ./logstash/queue
+chgrp -R 1000 ./elasticsearch ./data ./logstash ./kibana
+
+# You need the proper credentials here
+DOCKER_LOGIN=duodecim+example DOCKER_PASSWORD=somePassword sh start.sh
+```
+
 ## Installation
 
 ### Install Docker
-The installation instructions can be found on e.g. [Docker's site](https://www.docker.com). We support version 1.12+.
+The installation instructions can be found on e.g. [Docker's site](https://www.docker.com). We support version 1.13+.
 
 ### Download this repository
 Download the zip file from Github (the "Clone or download" button) or preferrably, if you have Git installed, run the command:

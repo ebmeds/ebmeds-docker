@@ -1,15 +1,15 @@
 #!/bin/bash
 
-if [ -z $1 ]; then
-  echo "Usage: sh get-images.sh <version>";
+EBMEDS_VERSION=${1:-latest}
+ELK_VERSION=6.2.4
+
+if [ "$1" = "--help" ]; then
+  echo "Usage: sh get-images.sh [version]";
   echo "version: latest | x.y.z | dev";
   echo;
   echo "The environment variables DOCKER_LOGIN and DOCKER_PASSWORD can be used to skip having to manually enter the quay.io login info every time."
-exit 1;
+exit 0;
 fi;
-
-EBMEDS_VERSION=${1:-latest}
-ELK_VERSION=6.2.4
 
 if [ -n "${DOCKER_LOGIN}" -a -n "${DOCKER_PASSWORD}" ]; then
   echo 'Logging into quay.io with provided DOCKER_LOGIN and DOCKER_PASSWORD...'
@@ -36,4 +36,7 @@ if [ "$(docker info --format '{{.Swarm.LocalNodeState}}')" = "inactive" ]; then
   docker swarm init
 fi;
 
-docker stack deploy --compose-file docker-compose.yml ebmeds
+echo "Using EBMEDS_VERSION='$EBMEDS_VERSION'..."
+echo "Using ELK_VERSION='$ELK_VERSION'..."
+
+EBMEDS_VERSION=$EBMEDS_VERSION ELK_VERSION=$ELK_VERSION docker stack deploy --compose-file docker-compose.yml ebmeds
