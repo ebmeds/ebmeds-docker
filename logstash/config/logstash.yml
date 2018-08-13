@@ -1,5 +1,4 @@
 http.host: 0.0.0.0
-xpack.monitoring.enabled: false
 pipeline.id: main
 pipeline.batch.size: 125
 pipeline.batch.delay: 50

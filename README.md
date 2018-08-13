@@ -13,54 +13,35 @@ Download the zip file from Github (the "Clone or download" button) or preferrabl
 git clone https://github.com/ebmeds/ebmeds-docker.git
 ```
 
-### Login to quay.io and pull the required images
-The entire system is run in Docker, where each component has its own Docker container. The version of this container is also the same as the version of the contained component.
-
-Get/update the images by running the shell script
-
-```
-sh get-images.sh
-```
-
-Which by default will ask you for your quay.io username and password. If you want to automate the process, the script also checks DOCKER_LOGIN and DOCKER_PASSWORD for the information, so e.g. this works:
-
-```
-DOCKER_LOGIN=duodecim+example DOCKER_PASSWORD=somepassword sh get-images.sh
-```
-
-By default the script gets the latest stable version of the software, to use a specific version give the version as an argument to the script:
-
-```
-sh get-images.sh 2.0.0
-```
-
-It is also possible to use the version `dev` which is the current unstable development version. This is not recommended.
-
 ## Usage (Docker v1.13+)
-For simply getting up and running, after having run the `get-images.sh` script, do the following:
+For simply getting up and running with the latest stable version, do the following:
 
 ```
 sh start.sh
-# the service takes a while to start, and is then usable on port 3001
+# the username and password for the Docker registry will be asked of you,
+# e.g. "duodecim+example" and "somepassword". The service takes a while to
+# start, and is then usable on port 3001.
 sh stop.sh
 ```
 
-For more advanced usage, e.g. multi-node clusters, refer to the [Docker documentation](https://docs.docker.com/)
-
-## Usage (Docker v1.12)
-The oldest supported version of Docker does not have support for Docker Compose files when used together with Docker Swarm. Therefore the command `sh start.sh` will not work, and the `docker-compose.yml` file must be transformed into e.g. shell scripts that set up the services manually. For example, starting the `api-gateway` service manually can look something like this:
+You can also specify a specific version with
 
 ```
-docker service create --name api-gateway -e LISTEN_PORT=3001 -e ENGINE_URL=http://engine:3002/dss.asp?mode=test --network ebmedsnet --publish 3001:3001 --replicas=3 --update-delay 10s --update-parallelism 1 api-gateway
+sh start.sh 2.1.0
 ```
 
-Before this the swarm must be initialized and the network ebmedsnet created (in this example). Note that the environment variables used in this example are the ones found in `api-gateway/config.env`.
+and you can skip having to enter your Docker registry username and password every time by defining the environment variables:
 
-Please refer to the [Docker documentation](https://docs.docker.com/) to understand how to convert the `docker-compose.yml` file to command line commands.
+```
+DOCKER_LOGIN=duodecim+example DOCKER_PASSWORD=somepassword sh start.sh
+```
+
+For more advanced usage, e.g. multi-node clusters, refer to the [Docker documentation](https://docs.docker.com/).
+
 
 ## Configuration
 
-Per default `api-gateway` listens on port 3001 and is the only access point to the entire swarm. Environment variables can be set per service in the `<image-name>/config.env` file.
+Per default the EBMeDS service `api-gateway` listens on port 3001 and is the only access point to the entire swarm. Environment variables can be set per service in the `<image-name>/config.env` file.
 
 ## Data storage
 

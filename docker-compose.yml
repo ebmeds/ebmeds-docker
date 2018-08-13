@@ -2,7 +2,7 @@ version: "3"
 
 services:
   api-gateway:
-    image: api-gateway
+    image: "quay.io/duodecim/ebmeds-api-gateway:${EBMEDS_VERSION}"
     env_file:
       - api-gateway/config.env
     ports:
@@ -15,7 +15,7 @@ services:
 
   engine:
     # listens on port 3002 per default
-    image: engine
+    image: "quay.io/duodecim/ebmeds-engine:${EBMEDS_VERSION}"
     networks:
       - ebmedsnet
     env_file:
@@ -36,7 +36,7 @@ services:
 
   coaching:
     # listens on port 3003 per default
-    image: coaching
+    image: "quay.io/duodecim/ebmeds-coaching:${EBMEDS_VERSION}"
     networks:
       - ebmedsnet
     env_file:
@@ -47,7 +47,7 @@ services:
 
   clinical-datastore:
     # listens on port 3004 per default
-    image: clinical-datastore
+    image: "quay.io/duodecim/ebmeds-clinical-datastore:${EBMEDS_VERSION}"
     networks:
       - ebmedsnet
     env_file:
@@ -58,7 +58,7 @@ services:
 
   format-converter:
     # listens on port 3005 per default
-    image: format-converter
+    image: "quay.io/duodecim/ebmeds-format-converter:${EBMEDS_VERSION}"
     networks:
       - ebmedsnet
     env_file:
@@ -70,11 +70,11 @@ services:
 
   qmui:
     # listens on port 3006 per default and we expose the port
-    image: qmui
+    image: "quay.io/duodecim/ebmeds-qmui:${EBMEDS_VERSION}"
     networks:
       - ebmedsnet
     ports:
-      - 3006:3006 
+      - 3006:3006
     env_file:
       - qmui/config.env
     deploy:
@@ -83,7 +83,7 @@ services:
 
   elasticsearch:
     # listens on port 9200 for REST API traffic and port 9300 for node communication when clustered
-    image: elasticsearch
+    image: "docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}"
     environment:
        # set the below values to 50% of your server RAM, and for best performance
        # turn off swapping on the host OS
@@ -106,7 +106,7 @@ services:
         replicas: 1
 
   kibana:
-    image: kibana
+    image: "docker.elastic.co/kibana/kibana:${ELK_VERSION}"
     volumes:
       - ./kibana/config/:/usr/share/kibana/config
     ports:
@@ -119,17 +119,14 @@ services:
 
   logstash:
       # listens on port 5000 for tcp input per default
-      image: logstash
+      image: "docker.elastic.co/logstash/logstash:${ELK_VERSION}"
       volumes:
-        - ./logstash/config/:/usr/share/logstash/config/
+        - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
         - ./logstash/pipeline/:/usr/share/logstash/pipeline/
         - ./logstash/queue/:/usr/share/logstash/data/queue/
-#      environment:
-#        PATH_CONFIG: "/usr/share/logstash/pipeline"
-#        PATH_SETTINGS: "/usr/share/logstash/config"
-#        PATH_DATA: "/usr/share/logstash/data"
-#        PATH_QUEUE: "/usr/share/logstash/data/queue"
-        #LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+      environment:
+        xpack.monitoring.enabled: "false"
+        LS_JAVA_OPTS: "-Xmx256m -Xms256m"
       networks:
         - ebmedsnet
       deploy:
