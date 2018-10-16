@@ -4,7 +4,7 @@ services:
   api-gateway:
     image: "quay.io/duodecim/ebmeds-api-gateway:${EBMEDS_VERSION}"
     env_file:
-      - api-gateway/config.env
+      - ./config.env
     ports:
       - 3001:3001
     networks:
@@ -14,12 +14,12 @@ services:
       replicas: 1
 
   engine:
-    # listens on port 3002 per default
+    # listens internally on port 3002 per default
     image: "quay.io/duodecim/ebmeds-engine:${EBMEDS_VERSION}"
     networks:
       - ebmedsnet
     env_file:
-      - engine/config.env
+      - ./config.env
     deploy:
       mode: replicated
       replicas: 4
@@ -34,71 +34,50 @@ services:
         failure_action: continue
         max_failure_ratio: 0.3
 
-  coaching:
-    # listens on port 3003 per default
-    image: "quay.io/duodecim/ebmeds-coaching:${EBMEDS_VERSION}"
-    networks:
-      - ebmedsnet
-    env_file:
-      - coaching/config.env
-    deploy:
-      mode: replicated
-      replicas: 1
-
   clinical-datastore:
-    # listens on port 3004 per default
+    # listens internally on port 3004 per default
     image: "quay.io/duodecim/ebmeds-clinical-datastore:${EBMEDS_VERSION}"
     networks:
       - ebmedsnet
     env_file:
-      - clinical-datastore/config.env
+      - ./config.env
     deploy:
       mode: replicated
       replicas: 1
 
   format-converter:
-    # listens on port 3005 per default
+    # listens internally on port 3005 per default
     image: "quay.io/duodecim/ebmeds-format-converter:${EBMEDS_VERSION}"
     networks:
       - ebmedsnet
     env_file:
-      - format-converter/config.env
+      - ./config.env
     deploy:
       mode: replicated
       replicas: 4
 
-
-  qmui:
-    # listens on port 3006 per default and we expose the port
-    image: "quay.io/duodecim/ebmeds-qmui:${EBMEDS_VERSION}"
+  caregap:
+    # listens internally on port 3006 per default and we expose the port
+    image: "quay.io/duodecim/ebmeds-caregap:${EBMEDS_VERSION}"
     networks:
       - ebmedsnet
     ports:
       - 3006:3006
     env_file:
-      - qmui/config.env
+      - ./config.env
     deploy:
       mode: replicated
       replicas: 1
 
   elasticsearch:
-    # listens on port 9200 for REST API traffic and port 9300 for node communication when clustered
+    # listens on port 9200 for REST API traffic and internally on port 9300 for node communication when clustered
     image: "docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}"
-    environment:
-       # set the below values to 50% of your server RAM, and for best performance
-       # turn off swapping on the host OS
-       ES_JAVA_OPTS: "-Xms2g -Xmx2g"
-       # disable X-Pack
-       # see https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
-       #     https://www.elastic.co/guide/en/x-pack/current/installing-xpack.html#xpack-enabling
-       xpack.security.enabled: "false"
-       xpack.monitoring.enabled: "false"
-       xpack.graph.enabled: "false"
-       xpack.watcher.enabled: "false"
+    env_file:
+      - ./config.env
     volumes:
-      - ./data:/usr/share/elasticsearch/data
+      - ebmeds-elasticsearch-data:/usr/share/elasticsearch/data
     ports:
-      - "9200:9200"
+      - 9200:9200
     networks:
       - ebmedsnet
     deploy:
@@ -110,7 +89,7 @@ services:
     volumes:
       - ./kibana/config/:/usr/share/kibana/config
     ports:
-      - "5601:5601"
+      - 5601:5601
     networks:
       - ebmedsnet
     deploy:
@@ -118,21 +97,35 @@ services:
       replicas: 1 # should be enough
 
   logstash:
-      # listens on port 5000 for tcp input per default
+      # listens internally on port 5000 for tcp input per default
       image: "docker.elastic.co/logstash/logstash:${ELK_VERSION}"
       volumes:
         - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
         - ./logstash/pipeline/:/usr/share/logstash/pipeline/
-        - ./logstash/queue/:/usr/share/logstash/data/queue/
-      environment:
-        xpack.monitoring.enabled: "false"
-        LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+        - ebmeds-logstash-queue:/usr/share/logstash/data/queue/
       networks:
         - ebmedsnet
       deploy:
         mode: replicated
         replicas: 1
 
+  redis:
+    # listens internally on port 6379 by default
+    image: "redis:${REDIS_VERSION}"
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ebmeds-redis-data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - ebmedsnet
+    deploy:
+      mode: replicated
+      replicas: 1
+
+volumes:
+  ebmeds-logstash-queue:
+  ebmeds-elasticsearch-data:
+  ebmeds-redis-data:
 networks:
   ebmedsnet:
 
