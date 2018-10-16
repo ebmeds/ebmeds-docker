@@ -1,9 +1,0 @@
----
-# solita-base etc.
-- include: common.yml
-# Configuration for Jenkins server
-- include: jenkins.yml
-# Configuration for app servers
-- include: app.yml
-# Configuration for frontend servers
-- include: front.yml
