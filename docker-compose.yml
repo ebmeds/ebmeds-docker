@@ -54,7 +54,7 @@ services:
       - ./config.env
     deploy:
       mode: replicated
-      replicas: 4
+      replicas: 2
 
   caregap:
     # listens internally on port 3006 per default and we expose the port

@@ -37,6 +37,9 @@ if [ "$(docker info --format '{{.Swarm.LocalNodeState}}')" = "inactive" ]; then
   docker swarm init
 fi;
 
+echo "Attempting to set vm.max_map_count (Elasticsearch wants it)"
+sysctl -w vm.max_map_count=262144
+
 echo "Using EBMEDS_VERSION='$EBMEDS_VERSION'..."
 echo "Using ELK_VERSION='$ELK_VERSION'..."
 
