@@ -97,7 +97,7 @@ services:
       replicas: 1 # should be enough
 
   logstash:
-      # listens internally on port 5000 for tcp input per default
+      # listens internally on ports 5000 and 5005 for tcp input per default
       image: "docker.elastic.co/logstash/logstash:${ELK_VERSION}"
       volumes:
         - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
