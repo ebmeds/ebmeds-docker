@@ -5,6 +5,8 @@ services:
     image: "quay.io/duodecim/ebmeds-api-gateway:${EBMEDS_VERSION}"
     env_file:
       - ./config.env
+    volumes:
+      - ./users.json:/app/resource/users.json
     ports:
       - 3001:3001
     networks:
