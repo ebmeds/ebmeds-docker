@@ -5,6 +5,8 @@ services:
     image: "quay.io/duodecim/ebmeds-api-gateway:${EBMEDS_VERSION}"
     env_file:
       - ./config.env
+    volumes:
+      - ./users.json:/app/resource/users.json
     ports:
       - 3001:3001
     networks:
@@ -54,7 +56,7 @@ services:
       - ./config.env
     deploy:
       mode: replicated
-      replicas: 4
+      replicas: 2
 
   caregap:
     # listens internally on port 3006 per default and we expose the port
@@ -97,7 +99,7 @@ services:
       replicas: 1 # should be enough
 
   logstash:
-      # listens internally on port 5000 for tcp input per default
+      # listens internally on ports 5000 and 5005 for tcp input per default
       image: "docker.elastic.co/logstash/logstash:${ELK_VERSION}"
       volumes:
         - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
