@@ -42,13 +42,17 @@ sysctl -w vm.max_map_count=262144
 
 echo "Using EBMEDS_VERSION='$EBMEDS_VERSION'..."
 echo "Using ELK_VERSION='$ELK_VERSION'..."
+echo "Using REDIS_VERSION='$REDIS_VERSION'..."
+
+# Pull redis so we have it on disk and can start it immediately when "docker stack deploy" is run
+docker pull redis:$REDIS_VERSION
 
 EBMEDS_VERSION=$EBMEDS_VERSION ELK_VERSION=$ELK_VERSION REDIS_VERSION=$REDIS_VERSION \
   docker stack deploy --with-registry-auth --compose-file docker-compose.yml ebmeds
 
 echo '##################################################'
 echo '# Attempting to run Redis fix command in 5 seconds.'
-echo '# If the service is not running, run manually the command'
+echo '# If the command fails, run manually the command'
 echo '#'
 echo '# docker exec $(docker ps --filter "name=ebmeds_redis" --format "{{.ID}}") sh -c "yes yes | redis-cli --cluster fix localhost:6379"'
 echo '#'
