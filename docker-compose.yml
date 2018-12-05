@@ -125,6 +125,15 @@ services:
       mode: replicated
       replicas: 1
 
+  cmr:
+    # listens internally on port 3003 by default
+    image: "quay.io/duodecim/ebmeds-cmr:${EBMEDS_VERSION}"
+    networks:
+      - ebmedsnet
+    deploy:
+      mode: replicated
+      replicas: 1
+
 volumes:
   ebmeds-logstash-queue:
   ebmeds-elasticsearch-data:
