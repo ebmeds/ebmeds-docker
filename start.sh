@@ -49,16 +49,3 @@ docker pull redis:$REDIS_VERSION
 
 EBMEDS_VERSION=$EBMEDS_VERSION ELK_VERSION=$ELK_VERSION REDIS_VERSION=$REDIS_VERSION \
   docker stack deploy --with-registry-auth --compose-file docker-compose.yml ebmeds
-
-echo '##################################################'
-echo '# Attempting to run Redis fix command in 5 seconds.'
-echo '# If the command fails, run manually the command'
-echo '#'
-echo '# docker exec $(docker ps --filter "name=ebmeds_redis" --format "{{.ID}}") sh -c "yes yes | redis-cli --cluster fix localhost:6379"'
-echo '#'
-echo '# from your command line.'
-echo '###################################################'
-sleep 5
-
-# Redis makes it hard for us to run a cluster with a single node, these commands forcefully allocate slots to the one node we have
-docker exec $(docker ps --filter "name=ebmeds_redis" --format "{{.ID}}") sh -c "yes yes | redis-cli --cluster fix localhost:6379"
