@@ -1,4 +1,5 @@
 {
   "defaultConfig": {},
-  "userMode": "single"
+  "userMode": "single",
+  "users": []
 }
