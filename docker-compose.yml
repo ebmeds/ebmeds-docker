@@ -112,6 +112,18 @@ services:
         mode: replicated
         replicas: 1
 
+  apm:
+    # listens internally on ports 8200 by default
+    image: "docker.elastic.co/apm/apm-server:${ELK_VERSION}"
+    volumes:
+      - ./apm/apm-server.yml:/usr/share/apm-server/apm-server.yml
+      - ebmeds-apm-data:/usr/share/apm-server/data
+    networks:
+      - ebmedsnet
+    deploy:
+      mode: replicated
+      replicas: 1
+
   redis:
     # listens internally on port 6379 by default
     image: "redis:${REDIS_VERSION}"
@@ -135,6 +147,7 @@ services:
       replicas: 1
 
 volumes:
+  ebmeds-apm-data:
   ebmeds-logstash-queue:
   ebmeds-elasticsearch-data:
   ebmeds-redis-data:
