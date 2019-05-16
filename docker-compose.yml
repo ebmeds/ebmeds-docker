@@ -131,6 +131,8 @@ services:
     image: "quay.io/duodecim/ebmeds-cmr:${EBMEDS_VERSION}"
     networks:
       - ebmedsnet
+    env_file:
+      - ./config.env
     deploy:
       mode: replicated
       replicas: 1
