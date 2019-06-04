@@ -1,4 +1,4 @@
-version: "3"
+version: "3.3"
 
 services:
   api-gateway:
@@ -46,6 +46,7 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      endpoint_mode: dnsrr
 
   format-converter:
     # listens internally on port 3005 per default
@@ -142,6 +143,8 @@ services:
     image: "quay.io/duodecim/ebmeds-cmr:${EBMEDS_VERSION}"
     networks:
       - ebmedsnet
+    env_file:
+      - ./config.env
     deploy:
       mode: replicated
       replicas: 1
