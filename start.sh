@@ -29,7 +29,7 @@ else
 fi;
 
 if [ $? -ne 0 ]; then
-  echo "Something went wrong, EBMeDS startup aborted."
+  echo "Something went wrong, EBMEDS startup aborted."
   exit 1;
 fi
 
