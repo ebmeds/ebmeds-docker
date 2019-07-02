@@ -41,3 +41,13 @@ jspm_packages
 
 # Don't save database data
 data/nodes*
+
+# Terraform
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+.docker-config.json
