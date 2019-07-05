@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: comprehensive-medication-review-deployment
+  labels:
+    app: ebmeds
+    name: comprehensive-medication-review-deployment
+spec:
+  template:
+    metadata:
+      name: comprehensive-medication-review
+      labels:
+        app: ebmeds
+        name: comprehensive-medication-review
+    spec:
+      containers:
+        - name: cmr
+          image: 'quay.io/duodecim/ebmeds-cmr'
+          ports:
+            - containerPort: 3003
+      imagePullSecrets:
+        - name: ebmeds-quay-secret
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ebmeds
+      name: comprehensive-medication-review

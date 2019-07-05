@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: engine-deployment
+  labels:
+    app: ebmeds
+    name: engine-deployment
+spec:
+  template:
+    metadata:
+      name: engine
+      labels:
+        app: ebmeds
+        name: engine
+    spec:
+      containers:
+        - name: engine
+          image: 'quay.io/duodecim/ebmeds-engine'
+          ports:
+            - containerPort: 3002
+          env:
+            - name: EBMEDS_LOG_METHODS
+              value: stdout
+            - name: EBMEDS_REDIS_MODE
+              value: test
+            - name: EBMEDS_LOG_LEVEL
+              value: debug
+            - name: ELASTIC_APM_ACTIVE
+              value: 'false'
+      imagePullSecrets:
+        - name: ebmeds-quay-secret
+  replicas: 4
+  selector:
+    matchLabels:
+      app: ebmeds
+      name: engine

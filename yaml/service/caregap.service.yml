@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: caregap-service
+  labels:
+    app: ebmeds
+    name: caregap-service
+spec:
+  type: ClusterIP
+  ports:
+    - targetPort: 3006
+      port: 3006
+  selector:
+    app: ebmeds
+    name: caregap

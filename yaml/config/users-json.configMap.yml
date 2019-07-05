@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: users-config
+  labels:
+    app: ebmeds
+    name: users-config
+data:
+  users.json: |
+    {
+      "defaultConfig": {},
+      "userMode": "single",
+      "users": []
+    }

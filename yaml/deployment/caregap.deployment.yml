@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: caregap-deployment
+  labels:
+    app: ebmeds
+    name: caregap-deployment
+spec:
+  template:
+    metadata:
+      name: caregap
+      labels:
+        app: ebmeds
+        name: caregap
+    spec:
+      containers:
+        - name: caregap
+          image: 'quay.io/duodecim/ebmeds-caregap'
+          ports:
+            - containerPort: 3006
+      imagePullSecrets:
+        - name: ebmeds-quay-secret
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ebmeds
+      name: caregap

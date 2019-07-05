@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway-deployment
+  labels:
+    app: ebmeds
+    name: api-gateway-deployment
+spec:
+  template:
+    metadata:
+      name: api-gateway
+      labels:
+        app: ebmeds
+        name: api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: 'quay.io/duodecim/ebmeds-api-gateway'
+          ports:
+            - containerPort: 3001
+          volumeMounts:
+            - mountPath: /app/resource/users.json
+              name: users-volume
+              subPath: users.json
+          env:
+            - name: EBMEDS_LOG_METHODS
+              value: stdout
+            - name: EBMEDS_REDIS_MODE
+              value: test
+            - name: EBMEDS_LOG_LEVEL
+              value: debug
+            - name: ELASTIC_APM_ACTIVE
+              value: 'false'
+      volumes:
+        - name: users-volume
+          configMap:
+            name: users-config
+      imagePullSecrets:
+        - name: ebmeds-quay-secret
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ebmeds
+      name: api-gateway

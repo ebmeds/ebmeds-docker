@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clinical-datastore-deployment
+  labels:
+    app: ebmeds
+    name: clinical-datastore-deployment
+spec:
+  template:
+    metadata:
+      name: clinical-datastore
+      labels:
+        app: ebmeds
+        name: clinical-datastore
+    spec:
+      containers:
+        - name: clinical-datastore
+          image: 'quay.io/duodecim/ebmeds-clinical-datastore'
+          ports:
+            - containerPort: 3004
+      imagePullSecrets:
+        - name: ebmeds-quay-secret
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ebmeds
+      name: clinical-datastore
