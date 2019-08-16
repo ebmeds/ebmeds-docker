@@ -1,12 +1,14 @@
 #!/bin/bash
 
 EBMEDS_VERSION=${1:-latest}
+EBMEDS_MASTER_DATA_VERSION=${2:-latest}
 ELK_VERSION=6.2.4
 REDIS_VERSION=5-alpine
 
-if [ "$1" = "--help" ]; then
-  echo "Usage: sh start.sh [version]";
-  echo "version: latest | x.y.z | dev";
+if [[ "$1" = "--help" ]]; then
+  echo "Usage: sh start.sh [ebmeds-version] [master-data-version]";
+  echo "ebmeds-version: latest | x.y.z | dev";
+  echo "master-data-version: latest | x.y.z";
   echo;
   echo "The environment variables DOCKER_LOGIN and DOCKER_PASSWORD can be used to skip having to manually enter the quay.io login info every time."
 exit 0;
@@ -40,12 +42,14 @@ fi;
 echo "Attempting to set vm.max_map_count (Elasticsearch wants it)"
 sysctl -w vm.max_map_count=262144
 
-echo "Using EBMEDS_VERSION='$EBMEDS_VERSION'..."
-echo "Using ELK_VERSION='$ELK_VERSION'..."
-echo "Using REDIS_VERSION='$REDIS_VERSION'..."
+echo "Using EBMEDS_VERSION=${EBMEDS_VERSION}..."
+echo "Using EBMEDS_MASTER_DATA_VERSION=${EBMEDS_MASTER_DATA_VERSION}..."
+echo "Using ELK_VERSION=${ELK_VERSION}..."
+echo "Using REDIS_VERSION=${REDIS_VERSION}..."
 
 # Pull redis so we have it on disk and can start it immediately when "docker stack deploy" is run
-docker pull redis:$REDIS_VERSION
+docker pull redis:${REDIS_VERSION}
 
-EBMEDS_VERSION=$EBMEDS_VERSION ELK_VERSION=$ELK_VERSION REDIS_VERSION=$REDIS_VERSION \
+EBMEDS_VERSION=${EBMEDS_VERSION} EBMEDS_MASTER_DATA_VERSION=${EBMEDS_MASTER_DATA_VERSION} \
+ELK_VERSION=${ELK_VERSION} REDIS_VERSION=${REDIS_VERSION} \
   docker stack deploy --with-registry-auth --compose-file docker-compose.yml ebmeds
