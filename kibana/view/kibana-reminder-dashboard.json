@@ -1,0 +1,18 @@
+[
+  {
+    "_id": "33fc2260-c268-11e9-b13d-1f9f01a6655c",
+    "_type": "dashboard",
+    "_source": {
+      "title": "Reminder",
+      "hits": 0,
+      "description": "Visualisation representation of the returnable reminders.",
+      "panelsJSON": "[{\"panelIndex\":\"1\",\"gridData\":{\"x\":0,\"y\":4,\"w\":4,\"h\":3,\"i\":\"1\"},\"embeddableConfig\":{\"vis\":{\"legendOpen\":true},\"spy\":null},\"id\":\"71a14d40-c266-11e9-bfe2-5bfa710f0c01\",\"type\":\"visualization\",\"version\":\"6.2.4\"},{\"panelIndex\":\"2\",\"gridData\":{\"x\":4,\"y\":4,\"w\":4,\"h\":3,\"i\":\"2\"},\"id\":\"e4c84160-c267-11e9-b13d-1f9f01a6655c\",\"type\":\"visualization\",\"version\":\"6.2.4\"},{\"panelIndex\":\"3\",\"gridData\":{\"x\":8,\"y\":0,\"w\":4,\"h\":4,\"i\":\"3\"},\"id\":\"71b1e7b0-c269-11e9-b13d-1f9f01a6655c\",\"type\":\"visualization\",\"version\":\"6.2.4\",\"embeddableConfig\":{\"vis\":{\"legendOpen\":true}}},{\"panelIndex\":\"4\",\"gridData\":{\"x\":0,\"y\":0,\"w\":8,\"h\":4,\"i\":\"4\"},\"embeddableConfig\":{\"vis\":{\"legendOpen\":false}},\"id\":\"d08e0100-c26a-11e9-b13d-1f9f01a6655c\",\"type\":\"visualization\",\"version\":\"6.2.4\"},{\"panelIndex\":\"5\",\"gridData\":{\"x\":8,\"y\":4,\"w\":4,\"h\":3,\"i\":\"5\"},\"id\":\"63d0b6f0-c26c-11e9-b13d-1f9f01a6655c\",\"type\":\"visualization\",\"version\":\"6.2.4\"},{\"panelIndex\":\"6\",\"gridData\":{\"x\":0,\"y\":10,\"w\":4,\"h\":3,\"i\":\"6\"},\"id\":\"f6b5b1f0-c26c-11e9-b13d-1f9f01a6655c\",\"type\":\"visualization\",\"version\":\"6.2.4\",\"embeddableConfig\":{\"spy\":null}},{\"panelIndex\":\"7\",\"gridData\":{\"x\":4,\"y\":7,\"w\":4,\"h\":3,\"i\":\"7\"},\"id\":\"8a9d76f0-c26d-11e9-b13d-1f9f01a6655c\",\"type\":\"visualization\",\"version\":\"6.2.4\"},{\"panelIndex\":\"8\",\"gridData\":{\"x\":4,\"y\":10,\"w\":4,\"h\":3,\"i\":\"8\"},\"id\":\"23f3eb90-c26e-11e9-b13d-1f9f01a6655c\",\"type\":\"visualization\",\"version\":\"6.2.4\"},{\"panelIndex\":\"9\",\"gridData\":{\"x\":8,\"y\":7,\"w\":4,\"h\":3,\"i\":\"9\"},\"id\":\"e4c84160-c267-11e9-b13d-1f9f01a6655c\",\"type\":\"visualization\",\"version\":\"6.2.4\"},{\"panelIndex\":\"10\",\"gridData\":{\"x\":0,\"y\":7,\"w\":4,\"h\":3,\"i\":\"10\"},\"id\":\"99422c80-c26f-11e9-b13d-1f9f01a6655c\",\"type\":\"visualization\",\"version\":\"6.2.4\"}]",
+      "optionsJSON": "{\"darkTheme\":false,\"hidePanelTitles\":false,\"useMargins\":true}",
+      "version": 1,
+      "timeRestore": false,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[],\"highlightAll\":true,\"version\":true}"
+      }
+    }
+  }
+]
