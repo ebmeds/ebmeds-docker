@@ -1,0 +1,128 @@
+[
+  {
+    "_id": "d08e0100-c26a-11e9-b13d-1f9f01a6655c",
+    "_type": "visualization",
+    "_source": {
+      "title": "Reminder Date Histogram",
+      "visState": "{\"title\":\"Reminder Date Histogram\",\"type\":\"histogram\",\"params\":{\"type\":\"histogram\",\"grid\":{\"categoryLines\":false,\"style\":{\"color\":\"#eee\"}},\"categoryAxes\":[{\"id\":\"CategoryAxis-1\",\"type\":\"category\",\"position\":\"bottom\",\"show\":true,\"style\":{},\"scale\":{\"type\":\"linear\"},\"labels\":{\"show\":true,\"truncate\":100},\"title\":{}}],\"valueAxes\":[{\"id\":\"ValueAxis-1\",\"name\":\"LeftAxis-1\",\"type\":\"value\",\"position\":\"left\",\"show\":true,\"style\":{},\"scale\":{\"type\":\"linear\",\"mode\":\"normal\"},\"labels\":{\"show\":true,\"rotate\":0,\"filter\":false,\"truncate\":100},\"title\":{\"text\":\"Reminder\"}}],\"seriesParams\":[{\"show\":\"true\",\"type\":\"histogram\",\"mode\":\"stacked\",\"data\":{\"label\":\"Count\",\"id\":\"1\"},\"valueAxis\":\"ValueAxis-1\",\"drawLinesBetweenPoints\":true,\"showCircles\":true}],\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"times\":[],\"addTimeMarker\":false},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"m\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{},\"customLabel\":\"Time\"}}]}",
+      "uiStateJSON": "{\"vis\":{\"legendOpen\":true}}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"30894f50-c253-11e9-bfe2-5bfa710f0c01\",\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
+      }
+    }
+  },
+  {
+    "_id": "8a9d76f0-c26d-11e9-b13d-1f9f01a6655c",
+    "_type": "visualization",
+    "_source": {
+      "title": "Contraindication's Reminder",
+      "visState": "{\"title\":\"Contraindication's Reminder\",\"type\":\"pie\",\"params\":{\"type\":\"pie\",\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true,\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"text.keyword\",\"otherBucket\":true,\"otherBucketLabel\":\"Other\",\"missingBucket\":true,\"missingBucketLabel\":\"Missing\",\"size\":10000,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"text\"}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"30894f50-c253-11e9-bfe2-5bfa710f0c01\",\"filter\":[{\"meta\":{\"index\":\"30894f50-c253-11e9-bfe2-5bfa710f0c01\",\"negate\":false,\"disabled\":false,\"alias\":\"Contraindication's Reminder\",\"type\":\"phrase\",\"key\":\"group.keyword\",\"value\":\"Contraindications\",\"params\":{\"query\":\"Contraindications\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"group.keyword\":{\"query\":\"Contraindications\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
+      }
+    }
+  },
+  {
+    "_id": "e4c84160-c267-11e9-b13d-1f9f01a6655c",
+    "_type": "visualization",
+    "_source": {
+      "title": "Indication's Reminder",
+      "visState": "{\"title\":\"Indication's Reminder\",\"type\":\"pie\",\"params\":{\"type\":\"pie\",\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true,\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"text.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":true,\"missingBucketLabel\":\"Missing\",\"size\":10000,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"text\"}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"30894f50-c253-11e9-bfe2-5bfa710f0c01\",\"filter\":[{\"meta\":{\"index\":\"30894f50-c253-11e9-bfe2-5bfa710f0c01\",\"negate\":false,\"disabled\":false,\"alias\":\"Indication's reminder\",\"type\":\"phrase\",\"key\":\"group.keyword\",\"value\":\"Indications\",\"params\":{\"query\":\"Indications\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"group.keyword\":{\"query\":\"Indications\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
+      }
+    }
+  },
+  {
+    "_id": "f6b5b1f0-c26c-11e9-b13d-1f9f01a6655c",
+    "_type": "visualization",
+    "_source": {
+      "title": "Gravidity's Reminder",
+      "visState": "{\"title\":\"Gravidity's Reminder\",\"type\":\"pie\",\"params\":{\"type\":\"pie\",\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true,\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"\"}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"text.keyword\",\"otherBucket\":true,\"otherBucketLabel\":\"Other\",\"missingBucket\":true,\"missingBucketLabel\":\"Missing\",\"size\":10000,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"text\"}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"30894f50-c253-11e9-bfe2-5bfa710f0c01\",\"filter\":[{\"$state\":{\"store\":\"appState\"},\"meta\":{\"alias\":\"Gravidity's Reminder\",\"disabled\":false,\"index\":\"30894f50-c253-11e9-bfe2-5bfa710f0c01\",\"key\":\"group.keyword\",\"negate\":false,\"params\":{\"query\":\"Gravidity\",\"type\":\"phrase\"},\"type\":\"phrase\",\"value\":\"Gravidity\"},\"query\":{\"match\":{\"group.keyword\":{\"query\":\"Gravidity\",\"type\":\"phrase\"}}}}],\"query\":{\"language\":\"lucene\",\"query\":\"\"}}"
+      }
+    }
+  },
+  {
+    "_id": "63d0b6f0-c26c-11e9-b13d-1f9f01a6655c",
+    "_type": "visualization",
+    "_source": {
+      "title": "Renbase's Reminder",
+      "visState": "{\"title\":\"Renbase's Reminder\",\"type\":\"pie\",\"params\":{\"type\":\"pie\",\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true,\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"text.keyword\",\"otherBucket\":true,\"otherBucketLabel\":\"Other\",\"missingBucket\":true,\"missingBucketLabel\":\"Missing\",\"size\":10000,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"text\"}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"30894f50-c253-11e9-bfe2-5bfa710f0c01\",\"filter\":[{\"meta\":{\"index\":\"30894f50-c253-11e9-bfe2-5bfa710f0c01\",\"negate\":false,\"disabled\":false,\"alias\":\"Renbase's Reminder\",\"type\":\"phrase\",\"key\":\"group.keyword\",\"value\":\"Renbase\",\"params\":{\"query\":\"Renbase\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"group.keyword\":{\"query\":\"Renbase\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
+      }
+    }
+  },
+  {
+    "_id": "71a14d40-c266-11e9-bfe2-5bfa710f0c01",
+    "_type": "visualization",
+    "_source": {
+      "title": "Script's Reminder",
+      "visState": "{\"aggs\":[{\"enabled\":true,\"id\":\"1\",\"params\":{},\"schema\":\"metric\",\"type\":\"count\"},{\"enabled\":true,\"id\":\"2\",\"params\":{\"customLabel\":\"text\",\"field\":\"text.keyword\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"order\":\"desc\",\"orderBy\":\"1\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"size\":10000},\"schema\":\"segment\",\"type\":\"terms\"}],\"params\":{\"addLegend\":true,\"addTooltip\":true,\"isDonut\":true,\"labels\":{\"last_level\":true,\"show\":false,\"truncate\":100,\"values\":true},\"legendPosition\":\"right\",\"type\":\"pie\"},\"title\":\"Script's Reminder\",\"type\":\"pie\"}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"30894f50-c253-11e9-bfe2-5bfa710f0c01\",\"filter\":[{\"$state\":{\"store\":\"appState\"},\"meta\":{\"alias\":\"Script's reminder\",\"disabled\":false,\"index\":\"30894f50-c253-11e9-bfe2-5bfa710f0c01\",\"key\":\"group.keyword\",\"negate\":false,\"params\":{\"query\":\"Script\",\"type\":\"phrase\"},\"type\":\"phrase\",\"value\":\"Script\"},\"query\":{\"match\":{\"group.keyword\":{\"query\":\"Script\",\"type\":\"phrase\"}}}}],\"query\":{\"language\":\"lucene\",\"query\":\"\"}}"
+      }
+    }
+  },
+  {
+    "_id": "71b1e7b0-c269-11e9-b13d-1f9f01a6655c",
+    "_type": "visualization",
+    "_source": {
+      "title": "Reminder's Group",
+      "visState": "{\"title\":\"Reminder's Group\",\"type\":\"pie\",\"params\":{\"type\":\"pie\",\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true,\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"group.keyword\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":true,\"missingBucketLabel\":\"Missing\",\"size\":50,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Group\"}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"30894f50-c253-11e9-bfe2-5bfa710f0c01\",\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
+      }
+    }
+  },
+  {
+    "_id": "23f3eb90-c26e-11e9-b13d-1f9f01a6655c",
+    "_type": "visualization",
+    "_source": {
+      "title": "Lactation's Reminder",
+      "visState": "{\"title\":\"Lactation's Reminder\",\"type\":\"pie\",\"params\":{\"type\":\"pie\",\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true,\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"text.keyword\",\"otherBucket\":true,\"otherBucketLabel\":\"Other\",\"missingBucket\":true,\"missingBucketLabel\":\"Missing\",\"include\":\"\",\"size\":10000,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"text\"}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"30894f50-c253-11e9-bfe2-5bfa710f0c01\",\"filter\":[{\"meta\":{\"index\":\"30894f50-c253-11e9-bfe2-5bfa710f0c01\",\"negate\":false,\"disabled\":false,\"alias\":\"Lactation's Reminder\",\"type\":\"phrase\",\"key\":\"group.keyword\",\"value\":\"Lactation\",\"params\":{\"query\":\"Lactation\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"group.keyword\":{\"query\":\"Lactation\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
+      }
+    }
+  },
+  {
+    "_id": "99422c80-c26f-11e9-b13d-1f9f01a6655c",
+    "_type": "visualization",
+    "_source": {
+      "title": "Interaction's Reminder",
+      "visState": "{\"title\":\"Interaction's Reminder\",\"type\":\"pie\",\"params\":{\"type\":\"pie\",\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":true,\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"text.keyword\",\"otherBucket\":true,\"otherBucketLabel\":\"Other\",\"missingBucket\":true,\"missingBucketLabel\":\"Missing\",\"size\":10000,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"text\"}}]}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"30894f50-c253-11e9-bfe2-5bfa710f0c01\",\"filter\":[{\"meta\":{\"index\":\"30894f50-c253-11e9-bfe2-5bfa710f0c01\",\"negate\":false,\"disabled\":false,\"alias\":\"Interaction's Reminder\",\"type\":\"phrase\",\"key\":\"group.keyword\",\"value\":\"Interactions\",\"params\":{\"query\":\"Interactions\",\"type\":\"phrase\"}},\"query\":{\"match\":{\"group.keyword\":{\"query\":\"Interactions\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
+      }
+    }
+  }
+]

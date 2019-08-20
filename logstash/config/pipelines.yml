@@ -5,3 +5,7 @@
 # Request pipeline for ebmeds-requests-* indices
 - pipeline.id: ebmeds-requests
   path.config: "/usr/share/logstash/pipeline/ebmeds-requests.conf"
+
+# Reminders pipeline for ebmeds-reminders-* indices
+- pipeline.id: ebmeds-reminders
+  path.config: "/usr/share/logstash/pipeline/ebmeds-reminders.conf"

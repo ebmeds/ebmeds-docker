@@ -106,6 +106,7 @@ services:
         - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
         - ./logstash/config/pipelines.yml:/usr/share/logstash/config/pipelines.yml
         - ./logstash/pipeline/:/usr/share/logstash/pipeline/
+        - ./logstash/ruby/:/usr/share/logstash/ruby/
         - ebmeds-logstash-queue:/usr/share/logstash/data/queue/
       networks:
         - ebmedsnet
