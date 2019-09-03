@@ -48,17 +48,6 @@ services:
       replicas: 1
       endpoint_mode: dnsrr
 
-  format-converter:
-    # listens internally on port 3005 per default
-    image: "quay.io/duodecim/ebmeds-format-converter:${EBMEDS_VERSION}"
-    networks:
-      - ebmedsnet
-    env_file:
-      - ./config.env
-    deploy:
-      mode: replicated
-      replicas: 2
-
   caregap:
     # listens internally on port 3006 per default and we expose the port
     image: "quay.io/duodecim/ebmeds-caregap:${EBMEDS_VERSION}"
