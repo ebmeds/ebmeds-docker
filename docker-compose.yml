@@ -47,6 +47,26 @@ services:
       mode: replicated
       replicas: 1
       endpoint_mode: dnsrr
+    volumes:
+      - ebmeds-master-data-staging:/app/master-data/staging:ro
+      - ebmeds-master-data-version-mapping:/app/master-data/version-mapping:ro
+      - ebmeds-master-data-versions:/app/master-data/versions:ro
+
+  master-data:
+    # by default, listens internally on port 3020
+    image: "quay.io/duodecim/ebmeds-master-data:${EBMEDS_MASTER_DATA_VERSION}"
+    networks:
+      - ebmedsnet
+    env_file:
+      - ./config.env
+    deploy:
+      mode: replicated
+      replicas: 1
+      endpoint_mode: dnsrr
+    volumes:
+      - ebmeds-master-data-staging:/master-data/staging
+      - ebmeds-master-data-version-mapping:/master-data/version-mapping
+      - ebmeds-master-data-versions:/master-data/versions
 
   caregap:
     # listens internally on port 3006 per default and we expose the port
@@ -140,6 +160,9 @@ services:
       replicas: 1
 
 volumes:
+  ebmeds-master-data-staging:
+  ebmeds-master-data-version-mapping:
+  ebmeds-master-data-versions:
   ebmeds-apm-data:
   ebmeds-logstash-queue:
   ebmeds-elasticsearch-data:
