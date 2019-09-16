@@ -2,7 +2,7 @@
 
 EBMEDS_VERSION=${1:-latest}
 EBMEDS_MASTER_DATA_VERSION=${2:-latest}
-ELK_VERSION=6.2.4
+ELK_VERSION=6.8.3
 
 if [[ "$1" = "--help" ]]; then
   echo "Usage: sh start.sh [ebmeds-version] [master-data-version]";
