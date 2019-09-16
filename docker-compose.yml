@@ -135,19 +135,6 @@ services:
       mode: replicated
       replicas: 1
 
-  redis:
-    # listens internally on port 6379 by default
-    image: "redis:${REDIS_VERSION}"
-    command: redis-server /usr/local/etc/redis/redis.conf
-    volumes:
-      - ebmeds-redis-data:/data
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
-    networks:
-      - ebmedsnet
-    deploy:
-      mode: replicated
-      replicas: 1
-
   cmr:
     # listens internally on port 3003 by default
     image: "quay.io/duodecim/ebmeds-cmr:${EBMEDS_VERSION}"
@@ -166,7 +153,6 @@ volumes:
   ebmeds-apm-data:
   ebmeds-logstash-queue:
   ebmeds-elasticsearch-data:
-  ebmeds-redis-data:
 networks:
   ebmedsnet:
 
