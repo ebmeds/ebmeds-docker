@@ -146,6 +146,17 @@ services:
       mode: replicated
       replicas: 1
 
+  dsv:
+    # listens internally on port 3010 by default
+    image: "quay.io/duodecim/ebmeds-diagnosis-specific-view:${EBMEDS_VERSION}"
+    networks:
+      - ebmedsnet
+    env_file:
+      - ./config.env
+    deploy:
+      mode: replicated
+      replicas: 1
+
 volumes:
   ebmeds-master-data-staging:
   ebmeds-master-data-version-mapping:
