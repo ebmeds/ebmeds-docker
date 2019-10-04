@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - [EBMEDS-1279:](https://jira.duodecim.fi/browse/EBMEDS-1279) Added dsv service to the docker-compose definition
+- [EBMEDS-1319:](https://jira.duodecim.fi/browse/EBMEDS-1319) Added the package.json that is required by the Sirppi release-script
 
 ### Removed
 - [EBMEDS-1230:](https://jira.duodecim.fi/browse/EBMEDS-1230) Removed clinical-datastore from the stack
