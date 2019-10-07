@@ -25,6 +25,7 @@ services:
     deploy:
       mode: replicated
       replicas: 4
+      endpoint_mode: dnsrr
       restart_policy:
         condition: on-failure
         delay: 2s
@@ -35,18 +36,6 @@ services:
         delay: 10s
         failure_action: continue
         max_failure_ratio: 0.3
-
-  clinical-datastore:
-    # listens internally on port 3004 per default
-    image: "quay.io/duodecim/ebmeds-clinical-datastore:${EBMEDS_VERSION}"
-    networks:
-      - ebmedsnet
-    env_file:
-      - ./config.env
-    deploy:
-      mode: replicated
-      replicas: 1
-      endpoint_mode: dnsrr
     volumes:
       - ebmeds-master-data-staging:/app/master-data/staging:ro
       - ebmeds-master-data-version-mapping:/app/master-data/version-mapping:ro
