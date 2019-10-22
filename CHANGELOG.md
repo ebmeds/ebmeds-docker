@@ -14,3 +14,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [EBMEDS-1230:](https://jira.duodecim.fi/browse/EBMEDS-1230) Removed clinical-datastore from the stack
 - [EBMEDS-1242:](https://jira.duodecim.fi/browse/EBMEDS-1242) Removed the format-converter from the docker-compose definition
 - [EBMEDS-1192:](https://jira.duodecim.fi/browse/EBMEDS-1192) Removed Redis from docker-swarm
+- [EBMEDS-1285:](https://jira.duodecim.fi/browse/EBMEDS-1285) Removed the unnecessary LICENSE file
