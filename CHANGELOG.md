@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## V2.4.0 - 2019-11-04
+
 - [EBMEDS-1373:](https://jira.duodecim.fi/browse/EBMEDS-1373) Changed elasticsearch indices to be monthly instead of daily.
 
 ### Added
