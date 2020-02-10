@@ -14,3 +14,6 @@ DOCKER_LOGIN=duodecim+example DOCKER_PASSWORD=somePassword sh start.sh
 ```
 ## Detailed instructions
 Please see the installation instructions at [](https://ebmeds.github.io/docs/installation/)
+
+## Note
+For a proper scaling EBMEDS installation, please use the Kubernetes deployment instructions at: https://github.com/ebmeds/ebmeds-kubernetes
