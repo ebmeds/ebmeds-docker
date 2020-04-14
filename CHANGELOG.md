@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## V2.4.1 - 2020-04-14
+
 ### Changed
 - [EBMEDS-1450:](https://jira.duodecim.fi/browse/EBMEDS-1450) Upgraded the Elastic stack version to v7.6.0
 
