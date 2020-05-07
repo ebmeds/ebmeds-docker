@@ -1,3 +1,6 @@
 server.name: ebmeds-kibana
 server.host: "0.0.0.0"
 elasticsearch.hosts: ["http://elasticsearch:9200"]
+elasticsearch.username: kibana
+elasticsearch.password: <kibana_password>
+#elasticsearch.ssl.certificateAuthorities: [ "config/elasticsearch-ca.pem" ]

@@ -1,3 +1,5 @@
 http.host: 0.0.0.0
 pipeline.batch.delay: 50
 pipeline.batch.size: 125
+xpack.monitoring.elasticsearch.username: logstash_system
+xpack.monitoring.elasticsearch.password: <logstash_password>

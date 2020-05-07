@@ -1,0 +1,150 @@
+version: "3.3"
+
+services:
+  api-gateway:
+    image: "ebmeds-api-gateway:${EBMEDS_VERSION}"
+    env_file:
+      - ./config.env
+    volumes:
+      - ./users.json:/app/resource/users.json
+    ports:
+      - 3001:3001
+    networks:
+      - ebmedsnet
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  engine:
+    # listens internally on port 3002 per default
+    image: "ebmeds-engine:${EBMEDS_VERSION}"
+    networks:
+      - ebmedsnet
+    env_file:
+      - ./config.env
+    deploy:
+      mode: replicated
+      replicas: 4
+      endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+        delay: 2s
+        max_attempts: 3
+        window: 120s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        max_failure_ratio: 0.3
+    volumes:
+      - ebmeds-master-data-staging:/app/master-data/staging:ro
+      - ebmeds-master-data-version-mapping:/app/master-data/version-mapping:ro
+      - ebmeds-master-data-versions:/app/master-data/versions:ro
+
+  master-data:
+    # by default, listens internally on port 3020
+    image: "ebmeds-master-data:${EBMEDS_MASTER_DATA_VERSION}"
+    networks:
+      - ebmedsnet
+    env_file:
+      - ./config.env
+    deploy:
+      mode: replicated
+      replicas: 1
+      endpoint_mode: dnsrr
+    volumes:
+      - ebmeds-master-data-staging:/master-data/staging
+      - ebmeds-master-data-version-mapping:/master-data/version-mapping
+      - ebmeds-master-data-versions:/master-data/versions
+
+  caregap:
+    # listens internally on port 3006 per default and we expose the port
+    image: "ebmeds-caregap:${EBMEDS_VERSION}"
+    networks:
+      - ebmedsnet
+    ports:
+      - 3006:3006
+      - 3007:3007
+    env_file:
+      - ./config.env
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  elasticsearch:
+      # listens on port 9200 for REST API traffic and internally on port 9300 for node communication when clustered
+      image: "docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}"
+      env_file: # Is this really necessary, if .yml file is used?
+        - ./config.env
+      volumes:
+        - ebmeds-elasticsearch-data:/usr/share/elasticsearch/data
+        - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+        #- ./elasticsearch/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12
+        #- ./elasticsearch/http.p12:/usr/share/elasticsearch/config/http.p12
+      ports:
+        - 9200:9200
+      networks:
+        - ebmedsnet
+      deploy:
+          mode: replicated # should be global once clustered
+          replicas: 1
+
+  kibana:
+      image: "docker.elastic.co/kibana/kibana:${ELK_VERSION}"
+      volumes:
+        - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml
+        #- ./kibana/elasticsearch-ca.pem:/usr/share/kibana/config/elasticsearch-ca.pem
+      ports:
+        - 5601:5601
+      networks:
+        - ebmedsnet
+      deploy:
+        mode: replicated
+        replicas: 1 # should be enough
+
+  logstash:
+      # listens internally on ports 5000 and 5005 for tcp input per default
+      image: "docker.elastic.co/logstash/logstash:${ELK_VERSION}"
+      volumes:
+        - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+        - ./logstash/config/pipelines.yml:/usr/share/logstash/config/pipelines.yml
+        - ./logstash/pipeline/:/usr/share/logstash/pipeline/
+        - ./logstash/ruby/:/usr/share/logstash/ruby/
+        - ebmeds-logstash-queue:/usr/share/logstash/data/queue/
+        #- ./logstash/elasticsearch-ca.pem:/usr/share/logstash/config/elasticsearch-ca.pem
+      networks:
+        - ebmedsnet
+      ports:
+        - 5000:5000
+        - 5001:5001
+        - 5005:5005
+      deploy:
+        mode: replicated
+        replicas: 1
+
+  apm:
+    # listens internally on ports 8200 by default
+    image: "docker.elastic.co/apm/apm-server:${ELK_VERSION}"
+    volumes:
+      - ./apm/apm-server.yml:/usr/share/apm-server/apm-server.yml
+      #- ./apm/elasticsearch-ca.pem:/usr/share/apm-server/elasticsearch-ca.pem
+      - ebmeds-apm-data:/usr/share/apm-server/data
+    networks:
+      - ebmedsnet
+    deploy:
+      mode: replicated
+      replicas: 1
+
+volumes:
+  ebmeds-master-data-staging:
+  ebmeds-master-data-version-mapping:
+  ebmeds-master-data-versions:
+  ebmeds-apm-data:
+  ebmeds-logstash-queue:
+  ebmeds-elasticsearch-data:
+networks:
+  ebmedsnet:
+
+# docker network create --driver overlay ebmedsnet
+# docker service create --name api-gateway --env-file config/api-gateway.env --constraint 'node.role == manager' --network ebmedsnet --publish 3001:3001 api-gateway
+# docker service create --name engine --publish 3002:3002 --network ebmedsnet --env-file config/engine.env --replicas=4 --update-delay 10s --update-parallelism 1 engine
