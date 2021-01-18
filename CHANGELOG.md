@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - [EBMEDS-1992](https://jira.duodecim.fi/browse/EBMEDS-1992) Set the requestId to be a request-log document id to eliminate duplication
+- [EBMEDS-1992](https://jira.duodecim.fi/browse/EBMEDS-1992) Set the Composed `requestId:logId` id for the reminder-log document id to eliminate duplication
 
 ## V2.6.1 - 2021-01-13
 
