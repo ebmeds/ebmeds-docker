@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- [EBMEDS-1992](https://jira.duodecim.fi/browse/EBMEDS-1992) Set the requestId to be a request-log document id to eliminate duplication
+
 ## V2.6.1 - 2021-01-13
 
 No changes
