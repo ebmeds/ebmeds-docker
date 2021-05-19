@@ -1,0 +1,29 @@
+# General settings
+cluster.name: "docker-cluster"
+network.host: 0.0.0.0
+discovery.type: single-node
+path.repo: ["/usr/share/elasticsearch/data/backup"]
+indices.query.bool.max_clause_count: 2048
+search.max_buckets: 20000
+
+# Security
+xpack.security.enabled: true
+xpack.monitoring.enabled: true
+xpack.security.authc.realms.native.native1.order: 0
+
+xpack.security.authc.realms.ldap.ldap1.order: 1
+xpack.security.authc.realms.ldap.ldap1.bind_dn: "CN=THA Kibana,OU=SOTE,OU=Palvelutunnukset,OU=Kayttajatunnukset,OU=Helsinki,DC=helsinki1,DC=hki,DC=local"
+xpack.security.authc.realms.ldap.ldap1.user_search.base_dn: "dc=helsinki1,dc=hki,dc=local"
+xpack.security.authc.realms.ldap.ldap1.user_search.filter: "(|(cn={0})(sAMAccountName={0}))"
+xpack.security.authc.realms.ldap.ldap1.group_search.base_dn: "dc=helsinki1,dc=hki,dc=local"
+xpack.security.authc.realms.ldap.ldap1.url: "ldap://helsinki1.hki.local"
+xpack.security.authc.realms.ldap.ldap1.timeout.ldap_search: "30s"
+xpack.security.authc.realms.ldap.ldap1.metadata: "cn,physicalDeliveryOfficeName,extensionAttribute13,extensionAttribute14,st"
+
+# Audit logging
+xpack.security.audit.enabled: true
+xpack.security.audit.logfile.events.emit_request_body: true
+xpack.security.audit.logfile.events.include: "authentication_success"
+xpack.security.audit.logfile.events.ignore_filters.filter1.realms: ["reserved"]
+xpack.security.audit.logfile.events.ignore_filters.filter2.roles: ["superuser"]
+xpack.security.audit.logfile.events.ignore_filters.filter3.indices: ["ebmeds-logs*", "ebmeds-reminders*", "ebmeds-requests*", ".kibana*", ".async*", ".apm*"]
