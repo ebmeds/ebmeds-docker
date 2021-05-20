@@ -1,5 +1,5 @@
 # ebmeds-docker
-Create a minimal installation of EBMEDS using Docker Swarm in a one-node cluster.
+Create an installation of EBMEDS using Docker Swarm in a one-node cluster.
 
 ## Quick start
 
@@ -12,11 +12,6 @@ chmod -R 755 .
 # You need the proper credentials here
 DOCKER_LOGIN=duodecim+example DOCKER_PASSWORD=somePassword sh start.sh
 ```
-## Detailed instructions
-Please see the installation instructions at [](https://ebmeds.github.io/docs/installation/)
-
-## Note
-For a proper scaling EBMEDS installation, please use the Kubernetes deployment instructions at: https://github.com/ebmeds/ebmeds-kubernetes
 
 # EBMEDS Docker Swarm
 
@@ -45,6 +40,10 @@ This set the virtual memory address space value permanently and update the setti
 Now, it's time to deploy the EBMEDS by Docker swarm for the first time if you have not yet done so. This step required you to log into the Quay Docker registry service provider where the built EBMEDS images are stored. To deploy the EBMEDS Docker, run:
 
     # Assuming that you are in the ebmeds-docker project root.
+    
+    # Versions can be defined upon deployment as follows:
+    $ ./start.sh <EBMEDS_VERSON> <MASTER-DATA_VERSION>
+    
     # To deploy the latest development version, run:
     $ ./start.sh dev
 
@@ -81,7 +80,14 @@ Assuming that the path, as mentioned earlier, is our Logstash volume path. Navig
 
 This gives recursively read, write, execute rights to the owner, group and other to all EBMEDS volumes. This concluded the deployment of the EBMEDS Docker swarm.
 
-It's also worthy to mention that EBMEDS services, e.g. `api-gateway` and `clinical-datastore`, environment variables can be overridden in `config.env` configuration which resides in the project root. Some of the environment variables are global and shared between the EBMEDS Docker services. Such environment variables are e.g. `ELASTIC_APM_ACTIVE` and `EBMEDS_LOG_LEVEL`. Overriding the shared environment variable affect all the services that are using the shared variables.
+It's also worthy to mention that EBMEDS services, e.g. `api-gateway` and `engine`, environment variables can be overridden in `config.env` configuration which resides in the project root. Some of the environment variables are global and shared between the EBMEDS Docker services. Such environment variables are e.g. `ELASTIC_APM_ACTIVE` and `EBMEDS_LOG_LEVEL`. Overriding the shared environment variable affect all the services that are using the shared variables.
+
+## Elasticsearch Audit Logging
+Elasticsearch audit logging can be enabled with Platinum or higher licence. Enable audit logging from `elasticsearch.yml` by setting `xpack.security.audit.enabled: true`. 
+
+Filebeat is used to read audit logs, which are stored in Docker container logfiles in `/var/lib/docker/containers/*/*.log`. Filebeat harvests, processes and stores the logs in an Elasticsearch index called `ebmeds-audit*`. This index can be viewed in Kibana.
+
+Audit logs contain all security events of the patient index. The following attributes are stored from the event: `username`, `request`, and `path`. This provides information on who has done and what in the patient index.
 
 ## Index Lifecycle Management
 This operation was carried out in Elastic stack version 7.6.0 – current release at the time.

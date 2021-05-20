@@ -1,19 +1,20 @@
 version: "3.3"
 
 services:
+  
   api-gateway:
     image: "quay.io/duodecim/ebmeds-api-gateway:${EBMEDS_VERSION}"
     env_file:
       - ./config.env
     volumes:
       - ./users.json:/app/resource/users.json
-    ports:
-      - 3001:3001
     networks:
       - ebmedsnet
     deploy:
       mode: replicated
       replicas: 1
+    ports:
+      - 3001:3001
 
   engine:
     # listens internally on port 3002 per default
@@ -24,7 +25,7 @@ services:
       - ./config.env
     deploy:
       mode: replicated
-      replicas: 4
+      replicas: 1
       endpoint_mode: dnsrr
       restart_policy:
         condition: on-failure
@@ -62,8 +63,6 @@ services:
     image: "quay.io/duodecim/ebmeds-caregap:${EBMEDS_VERSION}"
     networks:
       - ebmedsnet
-    ports:
-      - 3006:3006
     env_file:
       - ./config.env
     deploy:
@@ -77,25 +76,25 @@ services:
       - ./config.env
     volumes:
       - ebmeds-elasticsearch-data:/usr/share/elasticsearch/data
-    ports:
-      - 9200:9200
     networks:
       - ebmedsnet
     deploy:
         mode: replicated # should be global once clustered
         replicas: 1
+    ports:
+      - 9200:9200
 
   kibana:
     image: "docker.elastic.co/kibana/kibana:${ELK_VERSION}"
     volumes:
       - ./kibana/config/:/usr/share/kibana/config
-    ports:
-      - 5601:5601
     networks:
       - ebmedsnet
     deploy:
       mode: replicated
       replicas: 1 # should be enough
+    ports:
+      - 5601:5601
 
   logstash:
       # listens internally on ports 5000 and 5005 for tcp input per default
@@ -124,27 +123,18 @@ services:
       mode: replicated
       replicas: 1
 
-  cmr:
-    # listens internally on port 3003 by default
-    image: "quay.io/duodecim/ebmeds-cmr:${EBMEDS_VERSION}"
+  filebeat:
+    image: "docker.elastic.co/beats/filebeat:${ELK_VERSION}"
+    volumes:
+        - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+        - /var/lib/docker:/var/lib/docker:ro
+        - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - ebmedsnet
-    env_file:
-      - ./config.env
     deploy:
       mode: replicated
       replicas: 1
-
-  dsv:
-    # listens internally on port 3010 by default
-    image: "quay.io/duodecim/ebmeds-diagnosis-specific-view:${EBMEDS_VERSION}"
-    networks:
-      - ebmedsnet
-    env_file:
-      - ./config.env
-    deploy:
-      mode: replicated
-      replicas: 1
+    user: root
 
 volumes:
   ebmeds-master-data-staging:
@@ -156,6 +146,3 @@ volumes:
 networks:
   ebmedsnet:
 
-# docker network create --driver overlay ebmedsnet
-# docker service create --name api-gateway --env-file config/api-gateway.env --constraint 'node.role == manager' --network ebmedsnet --publish 3001:3001 api-gateway
-# docker service create --name engine --publish 3002:3002 --network ebmedsnet --env-file config/engine.env --replicas=4 --update-delay 10s --update-parallelism 1 engine
