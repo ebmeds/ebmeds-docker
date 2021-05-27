@@ -1,0 +1,112 @@
+version: "3.3"
+
+services:
+  
+  api-gateway:
+    image: "quay.io/duodecim/ebmeds-api-gateway:${EBMEDS_VERSION}"
+    env_file:
+      - ./config.env
+    volumes:
+      - ./users.json:/app/resource/users.json
+    networks:
+      - ebmedsnet
+    deploy:
+      mode: replicated
+      replicas: 1
+    ports:
+      - 3001:3001
+
+  engine:
+    # listens internally on port 3002 per default
+    image: "quay.io/duodecim/ebmeds-engine-master-data:${EBMEDS_VERSION}"
+    networks:
+      - ebmedsnet
+    env_file:
+      - ./config.env
+    deploy:
+      mode: replicated
+      replicas: 4
+      endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+        delay: 2s
+        max_attempts: 3
+        window: 120s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        max_failure_ratio: 0.3
+
+  caregap:
+    # listens internally on port 3006 per default and we expose the port
+    image: "quay.io/duodecim/ebmeds-caregap:${EBMEDS_VERSION}"
+    networks:
+      - ebmedsnet
+    env_file:
+      - ./config.env
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  elasticsearch:
+    # listens on port 9200 for REST API traffic and internally on port 9300 for node communication when clustered
+    image: "docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}"
+    env_file:
+      - ./config.env
+    volumes:
+      - ebmeds-elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - ebmedsnet
+    deploy:
+        mode: replicated # should be global once clustered
+        replicas: 1
+    ports:
+      - 9200:9200
+
+  kibana:
+    image: "docker.elastic.co/kibana/kibana:${ELK_VERSION}"
+    volumes:
+      - ./kibana/config/:/usr/share/kibana/config
+    networks:
+      - ebmedsnet
+    deploy:
+      mode: replicated
+      replicas: 1 # should be enough
+    ports:
+      - 5601:5601
+
+  logstash:
+      # listens internally on ports 5000 and 5005 for tcp input per default
+      image: "docker.elastic.co/logstash/logstash:${ELK_VERSION}"
+      volumes:
+        - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+        - ./logstash/config/pipelines.yml:/usr/share/logstash/config/pipelines.yml
+        - ./logstash/pipeline/:/usr/share/logstash/pipeline/
+        - ./logstash/ruby/:/usr/share/logstash/ruby/
+        - ebmeds-logstash-queue:/usr/share/logstash/data/queue/
+      networks:
+        - ebmedsnet
+      deploy:
+        mode: replicated
+        replicas: 1
+
+  apm:
+    # listens internally on ports 8200 by default
+    image: "docker.elastic.co/apm/apm-server:${ELK_VERSION}"
+    volumes:
+      - ./apm/apm-server.yml:/usr/share/apm-server/apm-server.yml
+      - ebmeds-apm-data:/usr/share/apm-server/data
+    networks:
+      - ebmedsnet
+    deploy:
+      mode: replicated
+      replicas: 1
+
+volumes:
+  ebmeds-apm-data:
+  ebmeds-logstash-queue:
+  ebmeds-elasticsearch-data:
+networks:
+  ebmedsnet:
+
