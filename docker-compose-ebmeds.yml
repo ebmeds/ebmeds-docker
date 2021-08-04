@@ -1,0 +1,69 @@
+version: "3.3"
+
+services:
+  api-gateway:
+    image: "quay.io/duodecim/ebmeds-api-gateway:latest"
+    volumes:
+      - ./users.json:/app/resource/users.json
+    env_file:
+      - ./config.env
+    ports:
+      - 3001:3001
+    networks:
+      - ebmedsnet
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  engine:
+    # listens internally on port 3002 per default
+    image: "quay.io/duodecim/ebmeds-engine:latest"
+    networks:
+      - ebmedsnet
+    env_file:
+      - ./config.env
+    deploy:
+      mode: replicated
+      replicas: 1
+      endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+        delay: 2s
+        max_attempts: 3
+        window: 120s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        max_failure_ratio: 0.3
+    volumes:
+      - ebmeds-master-data-staging:/app/master-data/staging:ro
+      - ebmeds-master-data-version-mapping:/app/master-data/version-mapping:ro
+      - ebmeds-master-data-versions:/app/master-data/versions:ro
+
+  master-data:
+    # by default, listens internally on port 3020
+    image: "quay.io/duodecim/ebmeds-master-data:latest"
+    networks:
+      - ebmedsnet
+    env_file:
+      - ./config.env
+    deploy:
+      mode: replicated
+      replicas: 1
+      endpoint_mode: dnsrr
+    volumes:
+      - ebmeds-master-data-staging:/master-data/staging
+      - ebmeds-master-data-version-mapping:/master-data/version-mapping
+      - ebmeds-master-data-versions:/master-data/versions
+
+volumes:
+  ebmeds-master-data-staging:
+  ebmeds-master-data-version-mapping:
+  ebmeds-master-data-versions:
+networks:
+  ebmedsnet:
+
+# docker network create --driver overlay ebmedsnet
+# docker service create --name api-gateway --env-file config/api-gateway.env --constraint 'node.role == manager' --network ebmedsnet --publish 3001:3001 api-gateway
+# docker service create --name engine --publish 3002:3002 --network ebmedsnet --env-file config/engine.env --replicas=4 --update-delay 10s --update-parallelism 1 engine
