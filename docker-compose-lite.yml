@@ -38,17 +38,6 @@ services:
         failure_action: continue
         max_failure_ratio: 0.3
 
-  caregap:
-    # listens internally on port 3006 per default and we expose the port
-    image: "quay.io/duodecim/ebmeds-caregap:${EBMEDS_VERSION}"
-    networks:
-      - ebmedsnet
-    env_file:
-      - ./config.env
-    deploy:
-      mode: replicated
-      replicas: 1
-
   elasticsearch:
     # listens on port 9200 for REST API traffic and internally on port 9300 for node communication when clustered
     image: "docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}"
@@ -91,20 +80,7 @@ services:
         mode: replicated
         replicas: 1
 
-  apm:
-    # listens internally on ports 8200 by default
-    image: "docker.elastic.co/apm/apm-server:${ELK_VERSION}"
-    volumes:
-      - ./apm/apm-server.yml:/usr/share/apm-server/apm-server.yml
-      - ebmeds-apm-data:/usr/share/apm-server/data
-    networks:
-      - ebmedsnet
-    deploy:
-      mode: replicated
-      replicas: 1
-
 volumes:
-  ebmeds-apm-data:
   ebmeds-logstash-queue:
   ebmeds-elasticsearch-data:
 networks:

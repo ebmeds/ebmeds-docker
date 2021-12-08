@@ -47,4 +47,4 @@ echo "Using ELK_VERSION=${ELK_VERSION}..."
 
 EBMEDS_VERSION=${EBMEDS_VERSION} EBMEDS_MASTER_DATA_VERSION=${EBMEDS_MASTER_DATA_VERSION} \
 ELK_VERSION=${ELK_VERSION} \
-  docker stack deploy --with-registry-auth --compose-file docker-compose.yml ebmeds
+  docker stack deploy --with-registry-auth --compose-file docker-compose-lite.yml ebmeds

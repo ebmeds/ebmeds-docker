@@ -11,21 +11,20 @@ services:
     networks:
       - ebmedsnet
     deploy:
-      mode: replicated
-      replicas: 1
+      mode: global
     ports:
       - 3001:3001
 
   engine:
     # listens internally on port 3002 per default
-    image: "quay.io/duodecim/ebmeds-engine:${EBMEDS_VERSION}"
+    image: "quay.io/duodecim/ebmeds-engine-master-data:${EBMEDS_VERSION}"
     networks:
       - ebmedsnet
     env_file:
       - ./config.env
     deploy:
       mode: replicated
-      replicas: 1
+      replicas: 3
       endpoint_mode: dnsrr
       restart_policy:
         condition: on-failure
@@ -37,52 +36,33 @@ services:
         delay: 10s
         failure_action: continue
         max_failure_ratio: 0.3
-    volumes:
-      - ebmeds-master-data-staging:/app/master-data/staging:ro
-      - ebmeds-master-data-version-mapping:/app/master-data/version-mapping:ro
-      - ebmeds-master-data-versions:/app/master-data/versions:ro
-
-  master-data:
-    # by default, listens internally on port 3020
-    image: "quay.io/duodecim/ebmeds-master-data:${EBMEDS_MASTER_DATA_VERSION}"
-    networks:
-      - ebmedsnet
-    env_file:
-      - ./config.env
-    deploy:
-      mode: replicated
-      replicas: 1
-      endpoint_mode: dnsrr
-    volumes:
-      - ebmeds-master-data-staging:/master-data/staging
-      - ebmeds-master-data-version-mapping:/master-data/version-mapping
-      - ebmeds-master-data-versions:/master-data/versions
-
-  caregap:
-    # listens internally on port 3006 per default and we expose the port
-    image: "quay.io/duodecim/ebmeds-caregap:${EBMEDS_VERSION}"
-    networks:
-      - ebmedsnet
-    env_file:
-      - ./config.env
-    deploy:
-      mode: replicated
-      replicas: 1
 
   elasticsearch:
     # listens on port 9200 for REST API traffic and internally on port 9300 for node communication when clustered
     image: "docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}"
-    env_file:
-      - ./config.env
+    hostname: "{{.Node.Hostname}}"
+    environment:
+      - network.host=0.0.0.0
+      - node.name={{.Node.Hostname}}
+      - cluster.name=ebmeds-logs
+      - discovery.seed_hosts=elasticsearch
+      - cluster.initial_master_nodes=node1
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     volumes:
       - ebmeds-elasticsearch-data:/usr/share/elasticsearch/data
     networks:
       - ebmedsnet
     deploy:
-        mode: replicated # should be global once clustered
-        replicas: 1
+      mode: global
+      endpoint_mode: dnsrr
     ports:
       - 9200:9200
+      - 9300:9300
 
   kibana:
     image: "docker.elastic.co/kibana/kibana:${ELK_VERSION}"
@@ -111,36 +91,7 @@ services:
         mode: replicated
         replicas: 1
 
-  apm:
-    # listens internally on ports 8200 by default
-    image: "docker.elastic.co/apm/apm-server:${ELK_VERSION}"
-    volumes:
-      - ./apm/apm-server.yml:/usr/share/apm-server/apm-server.yml
-      - ebmeds-apm-data:/usr/share/apm-server/data
-    networks:
-      - ebmedsnet
-    deploy:
-      mode: replicated
-      replicas: 1
-
-  filebeat:
-    image: "docker.elastic.co/beats/filebeat:${ELK_VERSION}"
-    volumes:
-        - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
-        - /var/lib/docker:/var/lib/docker:ro
-        - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - ebmedsnet
-    deploy:
-      mode: replicated
-      replicas: 1
-    user: root
-
 volumes:
-  ebmeds-master-data-staging:
-  ebmeds-master-data-version-mapping:
-  ebmeds-master-data-versions:
-  ebmeds-apm-data:
   ebmeds-logstash-queue:
   ebmeds-elasticsearch-data:
 networks:
