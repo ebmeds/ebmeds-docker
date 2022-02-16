@@ -1,0 +1,123 @@
+version: "3.3"
+
+services:
+  
+  api-gateway:
+    image: "quay.io/duodecim/ebmeds-api-gateway:${EBMEDS_VERSION}"
+    env_file:
+      - ./config.env
+    volumes:
+      - ebmeds-api-gateway-users:/app/resource
+    networks:
+      - ebmedsnet
+    deploy:
+      mode: global
+      endpoint_mode: dnsrr
+    ports:
+      - target: 3001
+        published: 3001
+        protocol: tcp
+        mode: host
+
+  engine:
+    # listens internally on port 3002 per default
+    image: "quay.io/duodecim/ebmeds-engine-master-data:${EBMEDS_VERSION}"
+    networks:
+      - ebmedsnet
+    env_file:
+      - ./config.env
+    deploy:
+      mode: replicated
+      replicas: 6
+      endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+        delay: 2s
+        max_attempts: 3
+        window: 120s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        max_failure_ratio: 0.3
+
+        
+
+  elasticsearch:
+    # listens on port 9200 for REST API traffic and internally on port 9300 for node communication when clustered
+    image: "docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}"
+    hostname: "{{.Node.Hostname}}"
+    environment:
+      - network.host=0.0.0.0
+      - node.name={{.Node.Hostname}}
+      - cluster.name=ebmeds-logs
+      - discovery.seed_hosts=elasticsearch
+      - cluster.initial_master_nodes=node1
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled: false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ebmeds-elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - ebmedsnet
+    deploy:
+      mode: global
+      endpoint_mode: dnsrr
+    ports:
+      - target: 9200
+        published: 9200
+        protocol: tcp
+        mode: host
+
+  kibana:
+    image: "docker.elastic.co/kibana/kibana:${ELK_VERSION}"
+    volumes:
+      - ebmeds-kibana-config:/usr/share/kibana/config
+    networks:
+      - ebmedsnet
+    deploy:
+      mode: replicated
+      replicas: 1
+      endpoint_mode: dnsrr
+    ports:
+      - target: 5601
+        published: 5601
+        protocol: tcp
+        mode: host
+
+  logstash:
+      # listens internally on ports 5000 and 5005 for tcp input per default
+      image: "docker.elastic.co/logstash/logstash:${ELK_VERSION}"
+      volumes:
+        - ebmeds-logstash-queue:/usr/share/logstash/data/queue
+        - ebmeds-logstash-config:/usr/share/logstash/config
+        - ebmeds-logstash-pipeline:/usr/share/logstash/pipeline
+        - ebmeds-logstash-ruby:/usr/share/logstash/ruby
+      networks:
+        - ebmedsnet
+      deploy:
+        mode: replicated
+        replicas: 1
+        endpoint_mode: dnsrr
+
+volumes:
+  ebmeds-elasticsearch-data:
+    external: true
+  ebmeds-logstash-queue:
+    external: true
+  ebmeds-api-gateway-users:
+    external: true
+  ebmeds-kibana-config:
+    external: true
+  ebmeds-logstash-config:
+    external: true
+  ebmeds-logstash-pipeline:
+    external: true
+  ebmeds-logstash-ruby:
+    external: true
+networks:
+  ebmedsnet:
