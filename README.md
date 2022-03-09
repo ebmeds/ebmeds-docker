@@ -82,6 +82,9 @@ This gives recursively read, write, execute rights to the owner, group and other
 
 It's also worthy to mention that EBMEDS services, e.g. `api-gateway` and `engine`, environment variables can be overridden in `config.env` configuration which resides in the project root. Some of the environment variables are global and shared between the EBMEDS Docker services. Such environment variables are e.g. `ELASTIC_APM_ACTIVE` and `EBMEDS_LOG_LEVEL`. Overriding the shared environment variable affect all the services that are using the shared variables.
 
+## Configuration
+Configuration is done via config.env and users.json files. Config.env file contains instructions on setting the variables. Users.json is and optional way of further configuring EBMEDS, please contact Duodecim for more details.
+
 ## Elasticsearch Audit Logging
 Elasticsearch audit logging can be enabled with Platinum or higher licence. Enable audit logging from `elasticsearch.yml` by setting `xpack.security.audit.enabled: true`. 
 
