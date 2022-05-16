@@ -85,6 +85,9 @@ It's also worthy to mention that EBMEDS services, e.g. `api-gateway` and `engine
 ## Configuration
 Configuration is done via config.env and users.json files. Config.env file contains instructions on setting the variables. Users.json is and optional way of further configuring EBMEDS, please contact Duodecim for more details.
 
+## Multi-node Docker Swarm
+Please use `ebmeds-boostrap.sh` script for preparing a multi-node Docker Swarm environment. Every node server needs to be bootstrapped before the EBMEDS stack can be deployed. Please consult Duodecim engineers when deploying a multi-node Docker swarm system.
+
 ## Elasticsearch Audit Logging
 Elasticsearch audit logging can be enabled with Platinum or higher licence. Enable audit logging from `elasticsearch.yml` by setting `xpack.security.audit.enabled: true`. 
 
@@ -215,7 +218,7 @@ curl -X PUT "http://localhost:9200/_ilm/policy/ebmeds-index-policy?pretty" -H 'C
       "delete": {
         "min_age": "150d",
         "actions": {
-	  "wait_for_snapshot" : {
+          "wait_for_snapshot" : {
             "policy": "ebmeds-snapshot-policy"
           }
           "delete": {}
