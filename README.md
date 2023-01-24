@@ -29,7 +29,7 @@ This inputs a list that should include "docker". If you are not included, ask yo
 
     $ sudo usermod -a -G docker $USER
 
-Next thing to do is to increase the virtual memory address space to the recommended size. By default, the operating system limits on a `mmapfs` counts are likely to be too low, which may result out of memory exception in the Elasticsearch. To increase the limits, run the following command as root (in macOS you must `screen` into the Docker virtual machine in order to set this value):
+Next thing to do is to increase the virtual memory address space to the recommended size. By default, the operating system limits on a `mmapfs` counts are likely to be too low, which may result out of memory exception in the Elasticsearch. To increase the limits, run the following command as root (in macOS you need to use the command `docker run -it --rm --privileged --pid=host justincormack/nsenter1` to enter the Docker virtual machine in order to set this value):
 
     $ sudo sysctl -w vm.max_map_count=262144
 
@@ -70,7 +70,7 @@ This command reveals the Logstash volume path e.g.:
 
     /var/lib/docker/volumes/ebmeds_ebmeds-logstash-queue/_data
 
-Assuming that the path, as mentioned earlier, is our Logstash volume path. Navigate to the `/var/lib/docker/volumes` and run the following command (in macOS, you must first `screen` into the Docker virtual machine, check Docker properties for its location):
+Assuming that the path, as mentioned earlier, is our Logstash volume path. Navigate to the `/var/lib/docker/volumes` and run the following command (in macOS, you must first use the command `docker run -it --rm --privileged --pid=host justincormack/nsenter1` to enter the Docker virtual machine):
 
     # Make sure you are in the right directory
     $ pwd
