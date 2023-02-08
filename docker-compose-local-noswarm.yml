@@ -1,0 +1,84 @@
+# Start with `docker compose -f docker-compose-local-noswarm.yml --env-file config.env up -d`
+# Check for missing environment values if not working
+version: "3.3"
+
+services:
+  
+  api-gateway:
+    image: "quay.io/duodecim/ebmeds-api-gateway:${EBMEDS_VERSION}"
+    env_file:
+      - ./config.env
+    volumes:
+      - ./users.json:/app/resource/users.json
+    ports:
+      - 3001:3001
+
+  engine:
+    # listens internally on port 3002 per default
+    image: "quay.io/duodecim/ebmeds-engine-master-data:${EBMEDS_VERSION}"
+    env_file:
+      - ./config.env
+    deploy:
+      endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+        delay: 2s
+        max_attempts: 3
+        window: 120s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        max_failure_ratio: 0.3
+  
+  # Comment this if you don't need caregap functionality
+  caregap:
+    # listens internally on port 3006 per default and we expose the port
+    image: "quay.io/duodecim/ebmeds-caregap:2.8.7"
+    env_file:
+      - ./config.env
+
+  elasticsearch:
+    # listens on port 9200 for REST API traffic and internally on port 9300 for node communication when clustered
+    image: "docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}"
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - xpack.license.self_generated.type=basic
+      - xpack.security.enabled=false
+      # uncomment this if you have problems
+      # - ingest.geoip.downloader.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ebmeds-elasticsearch-data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+
+  kibana:
+    image: "docker.elastic.co/kibana/kibana:${ELK_VERSION}"
+    volumes:
+      - ./kibana/config/:/usr/share/kibana/config
+    ports:
+      - 5601:5601
+
+  logstash:
+      # listens internally on ports 5000 and 5005 for tcp input per default
+      image: "docker.elastic.co/logstash/logstash:${ELK_VERSION}"
+      environment:
+        - LS_JAVA_OPTS= -Xmx256m -Xms256m
+      volumes:
+        - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+        - ./logstash/config/pipelines.yml:/usr/share/logstash/config/pipelines.yml
+        - ./logstash/pipeline/:/usr/share/logstash/pipeline/
+        - ./logstash/ruby/:/usr/share/logstash/ruby/
+        - ebmeds-logstash-queue:/usr/share/logstash/data/queue/
+
+volumes:
+  ebmeds-logstash-queue:
+  ebmeds-elasticsearch-data:
+
